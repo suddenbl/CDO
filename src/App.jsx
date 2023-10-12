@@ -1,7 +1,9 @@
 import React from 'react';
 import Header from './components/Header/Header';
-import Student from './pages/Student';
-import NotFound from './pages/NotFound';
+import Student from './pages/Student/Student';
+import NotFound from './pages/NotFound/NotFound';
+import Profik from './pages/Profik/Profik';
+import Teacher from './pages/Teacher/Teacher';
 import { Routes, Route } from 'react-router-dom';
 
 import styles from './scss/app.module.scss';
@@ -13,7 +15,9 @@ function App() {
       <main>
         <div className={styles.content}>
           <Routes>
-            <Route path="/" element={<Student />}></Route>
+            <Route path="/Student" element={<Student />}></Route>
+            <Route path="/Profik" element={<Profik />}></Route>
+            <Route path="/Teacher" element={<Teacher />}></Route>
             <Route path="*" element={<NotFound />}></Route>
           </Routes>
         </div>
