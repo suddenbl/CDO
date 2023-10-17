@@ -17,6 +17,10 @@ body {
   }
 }
 
+* {
+  box-sizing: border-box;
+}
+
 .appStart {
   background-color: white;
   border-radius: 30px;
