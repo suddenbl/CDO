@@ -17,9 +17,10 @@ function App() {
         <div className={styles.content}>
           <Routes>
             <Route path="/" element={<Login />}></Route>
-            <Route path="/Student" element={<Student />}></Route>
-            <Route path="/Profik" element={<Profik />}></Route>
-            <Route path="/Teacher" element={<Teacher />}></Route>
+            {/* <Route path="/1" element={<Student />}></Route>
+            <Route path="/2" element={<Profik />}></Route>
+            <Route path="/3" element={<Teacher />}></Route> */}
+            <Route path="/:userType/:userId" element={<Student />} />
             <Route path="*" element={<NotFound />}></Route>
           </Routes>
         </div>

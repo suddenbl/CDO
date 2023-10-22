@@ -1,25 +1,35 @@
 import React from 'react';
-// import { setUser } from '../../redux/slices/userSlice';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { login } from '../../store/slices/authSlice';
 import axios from 'axios';
 import styles from './Login.module.scss';
 
-const userTypes = {
+export const userTypes = {
   0: 'herSgory',
-  1: 'student',
+  1: 'Student',
   2: 'profik',
   3: 'teacher',
 };
 
 const Login = () => {
-  const [auth, setAuth] = React.useState(0);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [user, setUser] = React.useState('');
   const [pass, setPass] = React.useState('');
 
   const handleClick = (user, pass) => {
-    axios.post('http://localhost:3000/users', { user, pass }).then((res) => {
-      setAuth(res.data);
-    });
+    axios
+      .get(`http://localhost:5030/Auth/${user}/${pass}`, { user, pass })
+      .then((res) => {
+        dispatch(login(res.data));
+        // console.log(res.data);
+        navigate(`/${res.data.type}/${res.data.authId}`);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
