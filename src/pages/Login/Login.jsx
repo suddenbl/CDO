@@ -6,10 +6,13 @@ import axios from 'axios';
 import styles from './Login.module.scss';
 
 export const userTypes = {
-  0: 'herSgory',
-  1: 'Student',
-  2: 'profik',
-  3: 'teacher',
+  Guest: 'guest',
+  Student: 'student',
+  Union: 'union',
+  Teacher: 'teacher',
+  Rector: 'rector',
+  Admin: 'admin',
+  Accountant: 'accountant',
 };
 
 const Login = () => {
@@ -24,12 +27,22 @@ const Login = () => {
       .get(`http://localhost:5030/Auth/${user}/${pass}`, { user, pass })
       .then((res) => {
         dispatch(login(res.data));
-        // console.log(res.data);
+        console.log(res.data);
         navigate(`/${res.data.type}/${res.data.authId}`);
       })
       .catch((error) => {
         console.error(error);
       });
+    // axios
+    //   .post(`http://localhost:5030/Auth`, { user, pass })
+    //   .then((res) => {
+    //     dispatch(login(res.data));
+    //     // console.log(res.data);
+    //     navigate(`/${res.data.type}/${res.data.authId}`);
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
   };
 
   return (
