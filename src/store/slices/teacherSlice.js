@@ -2,19 +2,16 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   name: 'string',
-  group: 'string',
-  id: 0,
-  age: 0,
-  admissionTime: 'string',
+  post: 'string',
   contactMail: 'string',
   contactPhone: 'string',
 };
 
-export const userSlice = createSlice({
-  name: 'user',
+export const teacherSlice = createSlice({
+  name: 'teacher',
   initialState,
   reducers: {
-    setUser: (state, action) => {
+    setTeacher: (state, action) => {
       state.name = action.payload.name;
       state.group = action.payload.group;
       state.id = action.payload.id;
@@ -26,5 +23,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setUser } = userSlice.actions;
-export default userSlice.reducer;
+export const { setTeacher } = teacherSlice.actions;
+export default teacherSlice.reducer;

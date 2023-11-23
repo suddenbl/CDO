@@ -1,8 +1,8 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { login } from '../../store/slices/authSlice';
 import axios from 'axios';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../../store/slices/authSlice';
 import styles from './Login.module.scss';
 
 export const userTypes = {
@@ -24,14 +24,14 @@ const Login = () => {
 
   const handleClick = (user, pass) => {
     axios
-      .get(`http://localhost:5030/Auth/${user}/${pass}`, { user, pass })
+      .get(`http://localhost:5069/Authorization/${user}/${pass}`, { user, pass })
       .then((res) => {
         dispatch(login(res.data));
         console.log(res.data);
         navigate(`/${res.data.type}/${res.data.authId}`);
       })
       .catch((error) => {
-        console.error(error);
+        console.error('Axios error', error);
       });
     // axios
     //   .post(`http://localhost:5030/Auth`, { user, pass })

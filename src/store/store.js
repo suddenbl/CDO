@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authSlice from './slices/authSlice';
-import userSlice from './slices/userSlice';
+import studentSlice from './slices/studentSlice';
 
 /* eslint-disable no-underscore-dangle */
 export const store = configureStore({
   reducer: {
     auth: authSlice,
-    user: userSlice,
+    student: studentSlice,
   },
 });
 /* eslint-enable */

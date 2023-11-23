@@ -1,12 +1,11 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import styles from './User.module.scss';
 import axios from 'axios';
-import { setUser } from '../../store/slices/userSlice';
-import Actions from '../../components/Actions/Actions';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { setStudent } from '../../store/slices/studentSlice';
+import styles from './Student.module.scss';
 
-const User = () => {
+const Student = () => {
   const { userType, userId } = useParams();
   const dispatch = useDispatch();
 
@@ -14,16 +13,16 @@ const User = () => {
 
   React.useEffect(() => {
     axios
-      .get(`http://localhost:5030/Student/${userId}`)
+      .get(`http://localhost:5069/Student/${userId}`)
       .then((res) => {
-        dispatch(setUser(res.data));
+        dispatch(setStudent(res.data));
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
 
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.student);
 
   return (
     <div className={styles.container}>
@@ -44,17 +43,17 @@ const User = () => {
       </div>
       <div className={styles.contentBottom}>
         <h4 className={styles.contentBottomTitle}>Доступные действия:</h4>
-        {/* {userType === 'Student' && (
-          <ul className={styles.actions}>
-            <li className={styles.actionsItem}>
-              <button>Внесение данных о студенте</button>
-            </li>
-          </ul>
-        )} */}
-        <Actions userType={userType} />
+        {/* {userType === 'Student' && ( */}
+        <ul className={styles.actions}>
+          <li className={styles.actionsItem}>
+            <button>Внесение данных о студенте</button>
+          </li>
+        </ul>
+        {/* )} */}
+        {/* <Actions userType={userType} /> */}
       </div>
     </div>
   );
 };
 
-export default User;
+export default Student;
