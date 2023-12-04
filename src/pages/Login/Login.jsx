@@ -27,8 +27,11 @@ const Login = () => {
       .get(`http://localhost:5240/Authorization/${user}/${pass}`, { user, pass })
       .then((res) => {
         dispatch(login(res.data))
-        console.log(res.data)
-        navigate(`/${res.data.types}/${res.data.authToken}`)
+        return res.data
+      })
+      .then((res) => {
+        console.log(res)
+        navigate(`/${res.type}/${res.authToken}`)
       })
       .catch((error) => {
         console.error('все хуёво', error)

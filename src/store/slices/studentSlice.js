@@ -17,15 +17,15 @@ export const studentSlice = createSlice({
   initialState,
   reducers: {
     setStudent: (state, action) => {
-      state.studentId = action.payload.studentId
-      state.name = action.payload.name
+      state.id = action.payload.studentId
+      state.name = action.payload.fullNameStudent
       state.group = action.payload.group
       state.gender = action.payload.gender
       state.authToken = action.payload.authToken
       state.age = action.payload.age
       state.admissionTime = action.payload.admissionTime
-      state.contactMailStudent = action.payload.contactMailStudent
-      state.contactPhoneStudent = action.payload.contactPhoneStudent
+      state.contactMail = action.payload.contactMailStudent
+      state.contactPhone = action.payload.contactPhoneStudent
     },
   },
 })

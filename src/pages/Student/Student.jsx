@@ -1,20 +1,23 @@
 import axios from 'axios'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
 import { setStudent } from '../../store/slices/studentSlice'
 import styles from './Student.module.scss'
 
 const Student = () => {
-  const { userType, authToken } = useParams()
+  // const { userType, authToken } = useParams()
+  const studentData = useSelector((state) => state.auth)
   const dispatch = useDispatch()
 
-  console.log(userType)
+  console.log(studentData)
+
+  const authToken = studentData.user.authToken
 
   React.useEffect(() => {
     axios
       .get(`http://localhost:5240/Student/${authToken}/authToken`)
       .then((res) => {
+        console.log(res)
         dispatch(setStudent(res.data))
       })
       .catch((error) => {
@@ -23,6 +26,8 @@ const Student = () => {
   }, [])
 
   const user = useSelector((state) => state.student)
+
+  const dateOfBirth = new Date(user.age).toLocaleDateString('ru-RU')
 
   return (
     <div className={styles.container}>
@@ -35,9 +40,16 @@ const Student = () => {
         />
         <div className={styles.userInfo}>
           <ul className={styles.userInfoList}>
-            <li className={styles.userInfoListItem}>{user.name}</li>
-            <li className={styles.userInfoListItem}>Дата рождения: {user.dateOfBirth}</li>
+            <li className={styles.userInfoListItem}>ФИО: {user.name}</li>
+            <li className={styles.userInfoListItem}>
+              Пол: {user.gender == true ? 'Мужской ' : 'Женский'}
+            </li>
+            <li className={styles.userInfoListItem}>Дата рождения: {dateOfBirth}</li>
             <li className={styles.userInfoListItem}>Группа: {user.group}</li>
+            <li className={styles.userInfoListItem}>
+              Номер телефона: {user.contactPhone}
+            </li>
+            <li className={styles.userInfoListItem}>Почта: {user.contactMail}</li>
           </ul>
         </div>
       </div>
