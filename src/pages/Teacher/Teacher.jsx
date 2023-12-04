@@ -1,26 +1,26 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setTeacher } from '../../store/slices/teacherSlice';
-import styles from './Teacher.module.scss';
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setTeacher } from '../../store/slices/teacherSlice'
+import styles from './Teacher.module.scss'
 
 const Teacher = () => {
-  const { userType, userId } = useParams();
-  const dispatch = useDispatch();
+  const { userType, userId } = useParams()
+  const dispatch = useDispatch()
 
-  console.log(userType);
+  console.log(userType)
 
   React.useEffect(() => {
     axios
-      .get(`http://localhost:5069/Teacher/${userId}`)
+      .get(`http://localhost:5420/Teacher/${userId}`)
       .then((res) => {
-        dispatch(setTeacher(res.data));
+        dispatch(setTeacher(res.data))
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+        console.log(error)
+      })
+  }, [])
 
-  const user = useSelector((state) => state.teacher);
+  const user = useSelector((state) => state.teacher)
 
   return (
     <div className={styles.container}>
@@ -33,8 +33,8 @@ const Teacher = () => {
         />
         <div className={styles.userInfo}>
           <ul className={styles.userInfoList}>
-            <li className={styles.userInfoListItem}>{user.name}</li>
-            <li className={styles.userInfoListItem}>Должность: {user.post}</li>
+            <li className={styles.userInfoListItem}>{user.fullNameTeacher}</li>
+            <li className={styles.userInfoListItem}>Должность: {user.jobId}</li>
           </ul>
         </div>
       </div>
@@ -47,7 +47,7 @@ const Teacher = () => {
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Teacher;
+export default Teacher

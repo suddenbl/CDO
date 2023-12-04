@@ -1,9 +1,9 @@
-import axios from 'axios';
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { login } from '../../store/slices/authSlice';
-import styles from './Login.module.scss';
+import axios from 'axios'
+import React from 'react'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { login } from '../../store/slices/authSlice'
+import styles from './Login.module.scss'
 
 export const userTypes = {
   Guest: 'guest',
@@ -13,37 +13,27 @@ export const userTypes = {
   Rector: 'rector',
   Admin: 'admin',
   Accountant: 'accountant',
-};
+}
 
 const Login = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const [user, setUser] = React.useState('');
-  const [pass, setPass] = React.useState('');
+  const [user, setUser] = React.useState('')
+  const [pass, setPass] = React.useState('')
 
   const handleClick = (user, pass) => {
     axios
-      .get(`http://localhost:5069/Authorization/${user}/${pass}`, { user, pass })
+      .get(`http://localhost:5240/Authorization/${user}/${pass}`, { user, pass })
       .then((res) => {
-        dispatch(login(res.data));
-        console.log(res.data);
-        navigate(`/${res.data.type}/${res.data.authId}`);
+        dispatch(login(res.data))
+        console.log(res.data)
+        navigate(`/${res.data.types}/${res.data.authToken}`)
       })
       .catch((error) => {
-        console.error('Axios error', error);
-      });
-    // axios
-    //   .post(`http://localhost:5030/Auth`, { user, pass })
-    //   .then((res) => {
-    //     dispatch(login(res.data));
-    //     // console.log(res.data);
-    //     navigate(`/${res.data.type}/${res.data.authId}`);
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
-  };
+        console.error('все хуёво', error)
+      })
+  }
 
   return (
     <div className={styles.login}>
@@ -68,7 +58,7 @@ const Login = () => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

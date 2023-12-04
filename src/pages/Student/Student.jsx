@@ -1,28 +1,28 @@
-import axios from 'axios';
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { setStudent } from '../../store/slices/studentSlice';
-import styles from './Student.module.scss';
+import axios from 'axios'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import { setStudent } from '../../store/slices/studentSlice'
+import styles from './Student.module.scss'
 
 const Student = () => {
-  const { userType, userId } = useParams();
-  const dispatch = useDispatch();
+  const { userType, authToken } = useParams()
+  const dispatch = useDispatch()
 
-  console.log(userType);
+  console.log(userType)
 
   React.useEffect(() => {
     axios
-      .get(`http://localhost:5069/Student/${userId}`)
+      .get(`http://localhost:5240/Student/${authToken}/authToken`)
       .then((res) => {
-        dispatch(setStudent(res.data));
+        dispatch(setStudent(res.data))
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+        console.log('все хуёво 2', error)
+      })
+  }, [])
 
-  const user = useSelector((state) => state.student);
+  const user = useSelector((state) => state.student)
 
   return (
     <div className={styles.container}>
@@ -36,7 +36,7 @@ const Student = () => {
         <div className={styles.userInfo}>
           <ul className={styles.userInfoList}>
             <li className={styles.userInfoListItem}>{user.name}</li>
-            <li className={styles.userInfoListItem}>Возраст: {user.age}</li>
+            <li className={styles.userInfoListItem}>Дата рождения: {user.dateOfBirth}</li>
             <li className={styles.userInfoListItem}>Группа: {user.group}</li>
           </ul>
         </div>
@@ -53,7 +53,7 @@ const Student = () => {
         {/* <Actions userType={userType} /> */}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Student;
+export default Student
