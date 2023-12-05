@@ -1,26 +1,32 @@
-import React from 'react'
+import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTeacher } from '../../store/slices/teacherSlice'
+import { useEffect } from 'react'
 import styles from './Teacher.module.scss'
 
 const Teacher = () => {
-  const { userType, userId } = useParams()
+  const teacherData = useSelector((state) => state.auth.user)
+  const authToken = teacherData.authToken
+
+  console.log(authToken)
+
   const dispatch = useDispatch()
 
-  console.log(userType)
-
-  React.useEffect(() => {
+  useEffect(() => {
     axios
-      .get(`http://localhost:5420/Teacher/${userId}`)
+      .get(`http://localhost:5420/Teacher/${authToken}/authToken`)
       .then((res) => {
+        console.log('jopa')
         dispatch(setTeacher(res.data))
       })
-      .catch((error) => {
-        console.log(error)
+      .catch(() => {
+        console.log('все хуево 3')
       })
   }, [])
 
   const user = useSelector((state) => state.teacher)
+
+  // console.log(user)
 
   return (
     <div className={styles.container}>
@@ -28,13 +34,17 @@ const Teacher = () => {
         <img
           width="300px"
           height="300px"
-          src="https://basket-04.wb.ru/vol634/part63414/63414239/images/big/1.jpg"
+          src="https://kilinson.com/wa-data/public/blog/plugins/attachment/1/500/picture/platon012.jpg"
           alt="Аватарка"
         />
         <div className={styles.userInfo}>
           <ul className={styles.userInfoList}>
-            <li className={styles.userInfoListItem}>{user.fullNameTeacher}</li>
+            <li className={styles.userInfoListItem}>ФИО: {user.name}</li>
             <li className={styles.userInfoListItem}>Должность: {user.jobId}</li>
+            <li className={styles.userInfoListItem}>
+              Номер телефона: {user.contactPhone}
+            </li>
+            <li className={styles.userInfoListItem}>Почта: {user.contactMail}</li>
           </ul>
         </div>
       </div>

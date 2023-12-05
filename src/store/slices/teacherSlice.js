@@ -4,8 +4,8 @@ const initialState = {
   fullNameTeacher: 'string',
   contactMailTeacher: 'string',
   contactPhoneTeacher: 'string',
-  teacherId: 0,
-  authToken: 0,
+  teacherId: null,
+  authToken: null,
 }
 
 export const teacherSlice = createSlice({
@@ -13,10 +13,10 @@ export const teacherSlice = createSlice({
   initialState,
   reducers: {
     setTeacher: (state, action) => {
-      state.fullNameTeacher = action.payload.fullNameTeacher
-      state.contactMailTeacher = action.payload.contactMailTeacher
-      state.contactPhoneTeacher = action.payload.contactPhoneTeacher
-      state.teacherId = action.payload.teacherId
+      state.name = action.payload.fullNameTeacher
+      state.contactMail = action.payload.contactMailTeacher
+      state.contactPhone = action.payload.contactPhoneTeacher
+      state.id = action.payload.teacherId
       state.authToken = action.payload.authToken
       state.jobId = action.payload.jobId
     },

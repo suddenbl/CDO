@@ -1,19 +1,16 @@
 import axios from 'axios'
-import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setStudent } from '../../store/slices/studentSlice'
+import { useEffect } from 'react'
 import styles from './Student.module.scss'
 
 const Student = () => {
-  // const { userType, authToken } = useParams()
-  const studentData = useSelector((state) => state.auth)
+  const studentData = useSelector((state) => state.auth.user)
+  const authToken = studentData.authToken
+
   const dispatch = useDispatch()
 
-  console.log(studentData)
-
-  const authToken = studentData.user.authToken
-
-  React.useEffect(() => {
+  useEffect(() => {
     axios
       .get(`http://localhost:5240/Student/${authToken}/authToken`)
       .then((res) => {
