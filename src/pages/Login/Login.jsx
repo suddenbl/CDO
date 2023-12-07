@@ -46,14 +46,14 @@ const Login = () => {
           className={styles.input}
           type="text"
           value={user}
-          placeholder="Никнейм"
+          placeholder="Username"
           onChange={(e) => setUser(e.target.value)}
         />
         <input
           className={styles.input}
           type="password"
           value={pass}
-          placeholder="Пароль"
+          placeholder="Password"
           onChange={(e) => setPass(e.target.value)}
         />
         <button className={styles.button} onClick={() => handleClick(user, pass)}>
