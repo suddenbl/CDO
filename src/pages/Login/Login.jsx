@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../../store/slices/authSlice'
@@ -19,18 +19,18 @@ const Login = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const [user, setUser] = React.useState('')
-  const [pass, setPass] = React.useState('')
+  const [user, setUser] = useState('')
+  const [pass, setPass] = useState('')
 
   const handleClick = (user, pass) => {
     axios
       .get(`http://localhost:5240/Authorization/${user}/${pass}`, { user, pass })
       .then((res) => {
+        console.log('LOGIN', res.data)
         dispatch(login(res.data))
         return res.data
       })
       .then((res) => {
-        console.log(res)
         navigate(`/${res.type}/${res.authToken}`)
       })
       .catch((error) => {

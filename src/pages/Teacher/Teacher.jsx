@@ -1,7 +1,7 @@
 import axios from 'axios'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTeacher } from '../../store/slices/teacherSlice'
-import { useState, useEffect } from 'react'
 import styles from './Teacher.module.scss'
 
 const Teacher = () => {
@@ -16,7 +16,7 @@ const Teacher = () => {
     axios
       .get(`http://localhost:5240/Teacher/${authToken}/authToken`)
       .then((res) => {
-        console.log(res.data)
+        console.log('Teacher data: ', res.data)
         dispatch(setTeacher(res.data))
       })
       .catch(() => {
@@ -41,7 +41,7 @@ const Teacher = () => {
 
   const user = useSelector((state) => state.teacher)
 
-  console.log(Object.keys(student))
+  // console.log(Object.keys(student))
 
   return (
     <div className={styles.container}>

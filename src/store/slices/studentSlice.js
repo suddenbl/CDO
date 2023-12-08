@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   studentId: 0,
   name: 'string',
-  group: 'string',
+  groupName: 'string',
   gender: false,
   authToken: 0,
   age: 0,
@@ -19,7 +19,7 @@ export const studentSlice = createSlice({
     setStudent: (state, action) => {
       state.id = action.payload.studentId
       state.name = action.payload.fullNameStudent
-      state.group = action.payload.group
+      state.groupName = ''
       state.gender = action.payload.gender
       state.authToken = action.payload.authToken
       state.age = action.payload.age
@@ -27,8 +27,11 @@ export const studentSlice = createSlice({
       state.contactMail = action.payload.contactMailStudent
       state.contactPhone = action.payload.contactPhoneStudent
     },
+    setGroup: (state, action) => {
+      state.groupName = action.payload.groupName
+    },
   },
 })
 
-export const { setStudent } = studentSlice.actions
+export const { setStudent, setGroup } = studentSlice.actions
 export default studentSlice.reducer

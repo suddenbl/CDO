@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
-import { setStudent } from '../../store/slices/studentSlice'
+import { setStudent, setGroup } from '../../store/slices/studentSlice'
 import { useEffect } from 'react'
 import styles from './Student.module.scss'
 
@@ -14,8 +14,13 @@ const Student = () => {
     axios
       .get(`http://localhost:5240/Student/${authToken}/authToken`)
       .then((res) => {
-        console.log(res)
         dispatch(setStudent(res.data))
+        return res
+      })
+      .then((res) => {
+        axios.get(`http://localhost:5240/Group/${res.data.groupID}`).then((res) => {
+          dispatch(setGroup(res.data))
+        })
       })
       .catch((error) => {
         console.log('все хуёво 2', error)
@@ -42,7 +47,7 @@ const Student = () => {
               Пол: {user.gender == true ? 'Мужской ' : 'Женский'}
             </li>
             <li className={styles.userInfoListItem}>Дата рождения: {dateOfBirth}</li>
-            <li className={styles.userInfoListItem}>Группа: {user.group}</li>
+            <li className={styles.userInfoListItem}>Группа: {user.groupName}</li>
             <li className={styles.userInfoListItem}>
               Номер телефона: {user.contactPhone}
             </li>
