@@ -1,18 +1,19 @@
-import React from 'react';
+import React from 'react'
 
-import styles from './Header.module.scss';
+import { Button, Title } from '@mantine/core'
+import styles from './Header.module.scss'
 
 function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.wrapper}>
-        <h1>CDO. Личный кабинет</h1>
+        <Title order={1}>CDO. Личный кабинет</Title>
         <div className={styles.wrapperBlock}>
-          {/* <button className={styles.wrapperLogin}>Войти в систему</button> */}
+          <Button>Выйти</Button>
         </div>
       </div>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

@@ -1,100 +1,136 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setTeacher } from '../../store/slices/teacherSlice'
+import {
+  setGroup,
+  setLessons,
+  setStudentsInGroup,
+  setTeacher,
+} from '../../store/slices/teacherSlice'
 import styles from './Teacher.module.scss'
+
+import { Button, List, Tabs, Text } from '@mantine/core'
 
 const Teacher = () => {
   const teacherData = useSelector((state) => state.auth.user)
   const authToken = teacherData.authToken
 
-  console.log(authToken)
-
+  const user = useSelector((state) => state.teacher)
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5240/Teacher/${authToken}/authToken`)
-      .then((res) => {
-        console.log('Teacher data: ', res.data)
-        dispatch(setTeacher(res.data))
-      })
-      .catch(() => {
-        console.log('все хуево - препод')
-      })
-  }, [])
-
-  const [student, setStudent] = useState({})
-  const [studentId, setStudentId] = useState(0)
-
-  const getInformationAboutStudent = (studentId) => {
-    axios
-      .get(`http://localhost:5240/Student/${studentId}`)
-      .then((res) => {
-        console.log(res.data)
-        setStudent(res.data)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+  const getInformationAboutStudent = async (studentId) => {
+    try {
+      const response = await axios.get(`http://localhost:5240/Student/${studentId}`)
+      console.log('1 student data: ', response)
+      dispatch(setStudent(response.data))
+    } catch (error) {
+      console.log('Ошибка при получении данных 1 студента: ', error)
+      throw error
+    }
   }
 
-  const user = useSelector((state) => state.teacher)
+  const lessonsSearch = async (teacherID) => {
+    try {
+      const response = await axios.get(`http://localhost:5240/Lesson/${teacherID}`)
+      console.log('Lessons data: ', response.data)
+      dispatch(setLessons(response.data))
+      return response.data
+    } catch (error) {
+      console.log('Ошибка при получении данных уроков: ', error)
+      throw error // Прокидываем ошибку для обработки в вызывающей функции
+    }
+  }
 
-  // console.log(Object.keys(student))
+  const groupSearch = async (groupID) => {
+    try {
+      const response = await axios.get(`http://localhost:5240/Group/${groupID}`)
+      console.log('Group data: ', response.data)
+      dispatch(setGroup(response.data))
+      return response.data
+    } catch (error) {
+      console.log('Ошибка при получении данных группы: ', error)
+      throw error
+    }
+  }
+
+  const searchStudentsFromGroup = async (groupID) => {
+    try {
+      const response = await axios.get(`http://localhost:5240/Student/${groupID}/groupID`)
+      console.log('Students data: ', response.data)
+      dispatch(setStudentsInGroup({ groupID, students: response.data }))
+    } catch (error) {
+      console.log('Ошибка при получении данных студентов из группы: ', error)
+      throw error
+    }
+  }
+
+  useEffect(() => {
+    const fetchTeacherData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5240/Teacher/${authToken}/authToken`)
+        console.log('Teacher data: ', response.data)
+        dispatch(setTeacher(response.data))
+
+        const lessons = await lessonsSearch(response.data.teacherID)
+        const group = await groupSearch(lessons.groupID)
+        await searchStudentsFromGroup(group.groupID)
+      } catch (error) {
+        console.log('Ошибка при получении данных в общем: ', error)
+      }
+    }
+
+    fetchTeacherData()
+  }, [])
+
+  const [activeTab, setActiveTab] = useState('first')
 
   return (
     <div className={styles.container}>
       <div className={styles.content__top}>
         <img
-          width="300px"
-          height="300px"
+          className={styles.contentTopAvatar}
           src="https://kilinson.com/wa-data/public/blog/plugins/attachment/1/500/picture/platon012.jpg"
           alt="Аватарка"
         />
         <div className={styles.userInfo}>
-          <ul className={styles.userInfoList}>
-            <li className={styles.userInfoListItem}>ФИО: {user.name}</li>
-            <li className={styles.userInfoListItem}>Должность: {user.jobId}</li>
-            <li className={styles.userInfoListItem}>
-              Номер телефона: {user.contactPhone}
-            </li>
-            <li className={styles.userInfoListItem}>Почта: {user.contactMail}</li>
-          </ul>
+          <div className={styles.userInfoList}>
+            <Text size="md">ФИО: {user.name}</Text>
+            <Text size="md">Номер телефона: {user.contactPhone}</Text>
+            <Text size="md">Почта: {user.contactMail}</Text>
+          </div>
         </div>
       </div>
       <div className={styles.contentBottom}>
-        <h4 className={styles.contentBottomTitle}>Доступные действия:</h4>
-        <ul className={styles.actions}>
-          <li className={styles.actionsItem}>
-            <label>
-              Введите ID студента
-              <input
-                type="number"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
-              />
-            </label>
-            <button onClick={() => getInformationAboutStudent(studentId)}>
-              Показать информацию о студенте
-            </button>
-          </li>
-        </ul>
-        <div className={styles.result}>
-          {Object.keys(student).length > 0 ? (
-            <div>
-              <div>{student.fullNameStudent}</div>
-              <div>{student.studentId}</div>
-              <div>{student.age}</div>
-              <div>{student.enrollmentDate}</div>
-              <div>{student.contactMailStudent}</div>
-              <div>{student.contactPhoneStudent}</div>
-              <div>{student.gender}</div>
-            </div>
-          ) : (
-            <div>Ошибка 404. Пользователь не найден!</div>
-          )}
-        </div>
+        <Tabs value={activeTab} onChange={setActiveTab}>
+          <Tabs.List grow>
+            <Tabs.Tab value="first">Студенты</Tabs.Tab>
+            <Tabs.Tab value="second">Публикация материалов</Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panel value="first">
+            <Text size="md">Список групп: </Text>
+            <List type="ordered">
+              {user.group.map((group) => (
+                <List.Item key={group.groupID}>
+                  {group.groupName}
+                  {group.students && (
+                    <List type="ordered">
+                      {group.students.map((student) => (
+                        <List.Item key={student.studentID}>
+                          {student.fullNameStudent}
+                          <Button className={styles.listButton}>Добавить оценку</Button>
+                        </List.Item>
+                      ))}
+                    </List>
+                  )}
+                </List.Item>
+              ))}
+            </List>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="second">
+            <Text size="md">Что хотим опубликовать? </Text>
+          </Tabs.Panel>
+        </Tabs>
       </div>
     </div>
   )

@@ -4,6 +4,12 @@
     gap: 60px;
     margin-bottom: 50px;
 
+    .contentTopAvatar {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 30px;
+    }
+
     .userInfo {
       &List {
         margin: 0;
@@ -23,24 +29,52 @@
   }
 
   .contentBottom {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
     &Title {
-      margin-bottom: 30px;
       font-size: 20px;
       font-weight: 500;
     }
 
-    .actions {
-      margin: 0;
-      padding: 0;
-      text-indent: 0;
-      list-style-type: none;
-
+    .actionsContainer {
       display: flex;
-      gap: 10px;
+    }
 
-      &Item {
-        font-size: 15px;
+    .action {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      button {
+        margin-bottom: 5px;
+        padding: 5px 10px;
+        border: 1px solid gray;
+        border-radius: 5px;
+        background-color: white;
+        cursor: pointer;
+        transition: 0.3s ease-in-out;
+
+        &:hover {
+          background-color: #d9d9d9;
+        }
+      }
+
+      &Content {
+        padding: 5px;
+        border: 1px solid gray;
+        border-radius: 5px;
+        background-color: white;
       }
     }
+  }
+
+  .tabsList {
+    margin-bottom: 20px;
+  }
+
+  .listButton {
+    margin-left: 30px;
   }
 }
