@@ -21,23 +21,17 @@ export const teacherSlice = createSlice({
       state.id = action.payload.teacherID
       state.authToken = action.payload.authToken
       state.jobId = action.payload.jobId
-
-      // state.lessons = action.payload.lessons
     },
     setLessons: (state, action) => {
       state.lessons = action.payload
     },
     setGroup: (state, action) => {
-      // Проверяем, существует ли уже группа с таким groupID
       const existingGroupIndex = state.group.findIndex(
         (group) => group.groupID === action.payload.groupID,
       )
-
-      // Если группа существует, обновляем ее данные
       if (existingGroupIndex !== -1) {
         state.group[existingGroupIndex] = action.payload
       } else {
-        // Иначе добавляем новую группу
         state.group = [...state.group, action.payload]
       }
     },

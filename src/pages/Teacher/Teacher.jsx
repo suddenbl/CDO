@@ -94,26 +94,32 @@ const Teacher = () => {
         />
         <div className={styles.userInfo}>
           <div className={styles.userInfoList}>
-            <Text size="md">ФИО: {user.name}</Text>
-            <Text size="md">Номер телефона: {user.contactPhone}</Text>
-            <Text size="md">Почта: {user.contactMail}</Text>
+            <Text size="xl">ФИО: {user.name}</Text>
+            <Text size="xl">Номер телефона: {user.contactPhone}</Text>
+            <Text size="xl">Почта: {user.contactMail}</Text>
           </div>
         </div>
       </div>
       <div className={styles.contentBottom}>
-        <Tabs value={activeTab} onChange={setActiveTab}>
-          <Tabs.List grow>
-            <Tabs.Tab value="first">Студенты</Tabs.Tab>
+        <Tabs
+          className={styles.tabs}
+          value={activeTab}
+          onChange={setActiveTab}
+          orientation="vertical">
+          <Tabs.List className={styles.tabsList} grow>
+            <Tabs.Tab value="first">Мои группы</Tabs.Tab>
             <Tabs.Tab value="second">Публикация материалов</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="first">
-            <Text size="md">Список групп: </Text>
-            <List type="ordered">
+            <Text size="xl" className={styles.listTitle}>
+              Список групп:{' '}
+            </Text>
+            <List type="unordered" withPadding>
               {user.group.map((group) => (
                 <List.Item key={group.groupID}>
-                  {group.groupName}
+                  <Text size="lg">{group.groupName}</Text>
                   {group.students && (
-                    <List type="ordered">
+                    <List type="ordered" withPadding>
                       {group.students.map((student) => (
                         <List.Item key={student.studentID}>
                           {student.fullNameStudent}
@@ -128,7 +134,9 @@ const Teacher = () => {
           </Tabs.Panel>
 
           <Tabs.Panel value="second">
-            <Text size="md">Что хотим опубликовать? </Text>
+            <Text className={styles.listTitle} size="xl">
+              Что хотим опубликовать?{' '}
+            </Text>
           </Tabs.Panel>
         </Tabs>
       </div>
