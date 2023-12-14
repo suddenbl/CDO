@@ -34,9 +34,41 @@
     .listTitle {
       margin-bottom: 20px;
     }
+  }
 
-    .listButton {
-      margin-left: 20px;
+  .mb10 {
+    margin-bottom: 10px;
+  }
+
+  .actualGrades {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 5px;
+
+    button {
+      max-width: 200px;
+    }
+  }
+
+  .actualGradesButtons {
+    display: flex;
+    gap: 5px;
+  }
+
+  .publishForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .textarea {
+      input {
+        height: 200px;
+      }
+    }
+
+    button {
+      max-width: 200px;
     }
   }
 }

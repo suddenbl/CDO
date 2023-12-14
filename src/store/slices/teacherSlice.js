@@ -42,8 +42,13 @@ export const teacherSlice = createSlice({
         state.group[groupIndex].students = students
       }
     },
+    setMarks: (state, action) => {
+      state.mark = action.payload.mark
+      state.rating = action.payload.rating
+    },
   },
 })
 
-export const { setTeacher, setLessons, setGroup, setStudentsInGroup } = teacherSlice.actions
+export const { setTeacher, setLessons, setGroup, setStudentsInGroup, setMarks } =
+  teacherSlice.actions
 export default teacherSlice.reducer

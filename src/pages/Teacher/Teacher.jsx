@@ -4,12 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   setGroup,
   setLessons,
+  setMarks,
   setStudentsInGroup,
   setTeacher,
 } from '../../store/slices/teacherSlice'
 import styles from './Teacher.module.scss'
 
-import { Button, List, Tabs, Text } from '@mantine/core'
+import { Button, Input, List, Tabs, Text, Textarea } from '@mantine/core'
 
 const Teacher = () => {
   const teacherData = useSelector((state) => state.auth.user)
@@ -37,7 +38,7 @@ const Teacher = () => {
       return response.data
     } catch (error) {
       console.log('Ошибка при получении данных уроков: ', error)
-      throw error // Прокидываем ошибку для обработки в вызывающей функции
+      throw error
     }
   }
 
@@ -58,6 +59,7 @@ const Teacher = () => {
       const response = await axios.get(`http://localhost:5240/Student/${groupID}/groupID`)
       console.log('Students data: ', response.data)
       dispatch(setStudentsInGroup({ groupID, students: response.data }))
+      return response.data
     } catch (error) {
       console.log('Ошибка при получении данных студентов из группы: ', error)
       throw error
@@ -72,15 +74,58 @@ const Teacher = () => {
         dispatch(setTeacher(response.data))
 
         const lessons = await lessonsSearch(response.data.teacherID)
+        setLessons(lessons)
         const group = await groupSearch(lessons.groupID)
         await searchStudentsFromGroup(group.groupID)
       } catch (error) {
-        console.log('Ошибка при получении данных в общем: ', error)
+        console.log('Ошибка при получении данных в useEffect() : ', error)
       }
     }
 
     fetchTeacherData()
   }, [])
+
+  const [mark, setMark] = useState(0)
+  const [rating, setRating] = useState([])
+
+  const getMarkForStudent = async (studentID, lessonID) => {
+    try {
+      const res = await axios.get(`http://localhost:5240/Journal/${studentID}/studentID`)
+      for (let i = 0; i < res.data.length; i++) {
+        if (res.data[i].lessonID === lessonID) {
+          setMark(res.data[i].mark)
+          setRating(res.data[i].rating)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const setMarkForStudent = async (teacherID, studentID, order) => {
+    try {
+      const res = await axios.get(`http://localhost:5240/Lesson/${teacherID}`)
+      const lessonID = res.data.lessonID
+      const journal = await axios.get(`http://localhost:5240/Journal/${lessonID}/lessonID`)
+      const mark = prompt('Напишите оценку')
+      await axios.put(`http://localhost:5240/Journal/${studentID}/${order}/${mark}`)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const [publicationTitle, setPublicationTitle] = useState('')
+  const [publicationDescription, setPublicationDescription] = useState('')
+
+  const setPublicationForStudent = async (e, title, description, lessonID) => {
+    e.preventDefault()
+    axios.post('http://localhost:5240/Addon', {
+      addonHeader: title,
+      addonDescription: description,
+      lessonID: lessonID,
+    })
+    console.log('Запись добавлена')
+  }
 
   const [activeTab, setActiveTab] = useState('first')
 
@@ -95,6 +140,7 @@ const Teacher = () => {
         <div className={styles.userInfo}>
           <div className={styles.userInfoList}>
             <Text size="xl">ФИО: {user.name}</Text>
+            <Text size="xl">Должность: преподаватель</Text>
             <Text size="xl">Номер телефона: {user.contactPhone}</Text>
             <Text size="xl">Почта: {user.contactMail}</Text>
           </div>
@@ -110,6 +156,7 @@ const Teacher = () => {
             <Tabs.Tab value="first">Мои группы</Tabs.Tab>
             <Tabs.Tab value="second">Публикация материалов</Tabs.Tab>
           </Tabs.List>
+
           <Tabs.Panel value="first">
             <Text size="xl" className={styles.listTitle}>
               Список групп:{' '}
@@ -119,11 +166,55 @@ const Teacher = () => {
                 <List.Item key={group.groupID}>
                   <Text size="lg">{group.groupName}</Text>
                   {group.students && (
-                    <List type="ordered" withPadding>
+                    <List type="ordered">
                       {group.students.map((student) => (
                         <List.Item key={student.studentID}>
-                          {student.fullNameStudent}
-                          <Button className={styles.listButton}>Добавить оценку</Button>
+                          <Text size="md" className={styles.mb10}>
+                            {student.fullNameStudent}
+                          </Text>
+                          <div className={styles.gradesButtonBlock}>
+                            <div className={styles.actualGrades}>
+                              <Text size="xs">Оценка за зачет: {mark}</Text>
+                              <Text size="xs">
+                                Оценка за 1 рейтинг: {rating[0] ? rating[0] : 'Нет оценки'}
+                              </Text>
+                              <Text size="xs">
+                                Оценка за 2 рейтинг: {rating[1] ? rating[1] : 'Нет оценки'}
+                              </Text>
+                              <Text size="xs">
+                                Оценка за 3 рейтинг: {rating[2] ? rating[2] : 'Нет оценки'}
+                              </Text>
+                              <Button
+                                className={styles.actualGradesBlock}
+                                onClick={() =>
+                                  getMarkForStudent(student.studentID, user.lessons.lessonID)
+                                }>
+                                <Text size="md">Обновить оценки:</Text>
+                              </Button>
+                            </div>
+                            <div className={styles.actualGradesButtons}>
+                              <Button
+                                className={styles.listButton}
+                                onClick={() => setMarkForStudent(user.id, student.studentID, 1)}>
+                                <Text size="xs">Добавить оценку за зачет \ экзамен</Text>
+                              </Button>
+                              <Button
+                                className={styles.listButton}
+                                onClick={() => setMarkForStudent(user.id, student.studentID, 2)}>
+                                <Text size="xs">Добавить оценку за 1 рейтинг</Text>
+                              </Button>
+                              <Button
+                                className={styles.listButton}
+                                onClick={() => setMarkForStudent(user.id, student.studentID, 3)}>
+                                <Text size="xs">Добавить оценку за 2 рейтинг</Text>
+                              </Button>
+                              <Button
+                                className={styles.listButton}
+                                onClick={() => setMarkForStudent(user.id, student.studentID, 4)}>
+                                <Text size="xs">Добавить оценку за 3 рейтинг</Text>
+                              </Button>
+                            </div>
+                          </div>
                         </List.Item>
                       ))}
                     </List>
@@ -135,8 +226,36 @@ const Teacher = () => {
 
           <Tabs.Panel value="second">
             <Text className={styles.listTitle} size="xl">
-              Что хотим опубликовать?{' '}
+              Что хотим опубликовать?
             </Text>
+            <form className={styles.publishForm}>
+              <Text>Заголовок объявления</Text>
+              <Input
+                size="md"
+                type="text"
+                value={publicationTitle}
+                onChange={(e) => setPublicationTitle(e.target.value)}
+              />
+              <Text>Текст объявления</Text>
+              <Textarea
+                size="md"
+                className={styles.textarea}
+                value={publicationDescription}
+                onChange={(e) => setPublicationDescription(e.target.value)}
+              />
+              <Button
+                type="submit"
+                onClick={(e) =>
+                  setPublicationForStudent(
+                    e,
+                    publicationTitle,
+                    publicationDescription,
+                    user.lessons.lessonID,
+                  )
+                }>
+                Опубликовать материал
+              </Button>
+            </form>
           </Tabs.Panel>
         </Tabs>
       </div>

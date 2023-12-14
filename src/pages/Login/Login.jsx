@@ -43,7 +43,7 @@ const Login = () => {
   return (
     <div className={styles.login}>
       <Title order={2} size="h3" className={styles.loginTitle}>
-        Войти в систему
+        Вход в систему
       </Title>
       <div className={styles.loginBlock}>
         <Input
@@ -51,7 +51,7 @@ const Login = () => {
           radius="md"
           type="text"
           value={user}
-          placeholder="Username"
+          placeholder="Логин"
           onChange={(e) => setUser(e.target.value)}
         />
         <Input
@@ -59,7 +59,7 @@ const Login = () => {
           radius="md"
           type="password"
           value={pass}
-          placeholder="Password"
+          placeholder="Пароль"
           onChange={(e) => setPass(e.target.value)}
         />
         <Button className={styles.button} onClick={() => handleClick(user, pass)}>
