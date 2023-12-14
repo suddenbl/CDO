@@ -1,0 +1,22 @@
+.container {
+  .content__top {
+    display: flex;
+    gap: 60px;
+    margin-bottom: 50px;
+
+    .contentTopAvatar {
+      width: 200px;
+      height: 162px;
+      border-radius: 48px;
+      object-fit: cover;
+    }
+
+    .userInfo {
+      &List {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  }
+}

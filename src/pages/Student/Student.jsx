@@ -1,32 +1,33 @@
-import { Button, List, Text } from '@mantine/core'
-import axios from 'axios'
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { setGroup, setStudent } from '../../store/slices/studentSlice'
-import styles from './Student.module.scss'
+import { Button, List, Text } from '@mantine/core';
+import axios from 'axios';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setGroup, setStudent } from '../../store/slices/studentSlice';
+import styles from './Student.module.scss';
 
 const Student = () => {
-  const studentData = useSelector((state) => state.auth.user)
-  const authToken = studentData.authToken
-  const user = useSelector((state) => state.student)
-  const dispatch = useDispatch()
+  const studentData = useSelector((state) => state.auth.user);
+  const authToken = studentData.authToken;
+  const user = useSelector((state) => state.student);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5240/Student/${authToken}/authToken`)
-        dispatch(setStudent(response.data))
-        const group = await axios.get(`http://localhost:5240/Group/${response.data.groupID}`)
-        dispatch(setGroup(group.data))
+        const response = await axios.get(`http://localhost:5240/Student/${authToken}/authToken`);
+        console.log(response.data);
+        dispatch(setStudent(response.data));
+        const group = await axios.get(`http://localhost:5240/Group/${response.data.groupID}`);
+        dispatch(setGroup(group.data));
       } catch (error) {
-        console.log('Проблема в получении данных студента', error)
+        console.log('Проблема в получении данных студента', error);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  const dateOfBirth = new Date(user.age).toLocaleDateString('ru-RU')
+  const dateOfBirth = new Date(user.age).toLocaleDateString('ru-RU');
 
   return (
     <div className={styles.container}>
@@ -85,7 +86,7 @@ const Student = () => {
         {/* <Actions userType={userType} /> */}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Student
+export default Student;
