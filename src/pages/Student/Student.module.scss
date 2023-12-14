@@ -21,14 +21,9 @@
   }
 
   .contentBottom {
-    &Title {
-      margin-bottom: 30px;
-      font-size: 20px;
-      font-weight: 500;
-    }
-
-    .actions {
-      list-style: none;
+    .paymentWrap {
+      display: flex;
+      justify-content: space-between;
     }
   }
 }
