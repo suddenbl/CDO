@@ -8,6 +8,7 @@ import {
   setPayment,
   setJournal,
   setSubjectName,
+  setTest,
 } from '../../store/slices/studentSlice';
 import { setAddon } from '../../store/slices/addonSlice';
 import styles from './Student.module.scss';
@@ -42,9 +43,7 @@ const Student = () => {
         console.log('Проблема в получении данных студента', error);
       }
     };
-
     fetchData();
-    getArrSubjectName();
   }, []);
 
   const fetchSubject = async (lessonID) => {
@@ -54,7 +53,7 @@ const Student = () => {
     console.log(user.subjectName);
   };
   let array = [];
-  function getArrSubjectName() {
+  const getArrSubjectName = async () => {
     for (const i of user.journal) {
       let temp = i.lessonID;
       array.push(temp);
@@ -62,8 +61,7 @@ const Student = () => {
     for (const i of array) {
       fetchSubject(i);
     }
-  }
-
+  };
   const dateOfBirth = new Date(user.age).toLocaleDateString('ru-RU');
   return (
     <div className={styles.container}>
@@ -97,7 +95,9 @@ const Student = () => {
             <Tabs.Tab value="one">Внесение данных о студенте</Tabs.Tab>
             <Tabs.Tab value="two">Узнать стипендию</Tabs.Tab>
             <Tabs.Tab value="three">Узнать задолжности</Tabs.Tab>
-            <Tabs.Tab value="four">Узнать оценки</Tabs.Tab>
+            <Tabs.Tab value="four" onClick={() => getArrSubjectName()}>
+              Узнать оценки
+            </Tabs.Tab>
             <Tabs.Tab value="five">Просмотреть лекционный материал</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="one">

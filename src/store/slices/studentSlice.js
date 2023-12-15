@@ -14,6 +14,7 @@ const initialState = {
   payment: [],
   journal: [],
   subjectName: [],
+  test: {},
 };
 
 export const studentSlice = createSlice({
@@ -44,9 +45,12 @@ export const studentSlice = createSlice({
     setSubjectName: (state, action) => {
       state.subjectName = [...state.subjectName, action.payload.subjectName];
     },
+    setTest: (state, action) => {
+      state.test = action.payload;
+    },
   },
 });
 
-export const { setStudent, setGroup, setPayment, setJournal, setSubjectName } =
+export const { setStudent, setGroup, setPayment, setJournal, setSubjectName, setTest } =
   studentSlice.actions;
 export default studentSlice.reducer;
