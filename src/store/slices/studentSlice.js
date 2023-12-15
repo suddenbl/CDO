@@ -10,7 +10,10 @@ const initialState = {
   admissionTime: 'string',
   contactMailStudent: 'string',
   contactPhoneStudent: 'string',
+  budget: true,
   payment: [],
+  journal: [],
+  subjectName: [],
 };
 
 export const studentSlice = createSlice({
@@ -27,6 +30,7 @@ export const studentSlice = createSlice({
       state.admissionTime = action.payload.admissionTime;
       state.contactMail = action.payload.contactMailStudent;
       state.contactPhone = action.payload.contactPhoneStudent;
+      state.budget = action.payload.budget;
     },
     setGroup: (state, action) => {
       state.groupName = action.payload.groupName;
@@ -34,8 +38,15 @@ export const studentSlice = createSlice({
     setPayment: (state, action) => {
       state.payment = action.payload;
     },
+    setJournal: (state, action) => {
+      state.journal = action.payload;
+    },
+    setSubjectName: (state, action) => {
+      state.subjectName = [...state.subjectName, action.payload.subjectName];
+    },
   },
 });
 
-export const { setStudent, setGroup, setPayment } = studentSlice.actions;
+export const { setStudent, setGroup, setPayment, setJournal, setSubjectName } =
+  studentSlice.actions;
 export default studentSlice.reducer;
