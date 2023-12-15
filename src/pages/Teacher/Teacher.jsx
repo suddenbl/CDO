@@ -1,133 +1,152 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   setGroup,
   setLessons,
   setMarks,
   setStudentsInGroup,
   setTeacher,
-} from '../../store/slices/teacherSlice';
-import styles from './Teacher.module.scss';
+} from '../../store/slices/teacherSlice'
+import styles from './Teacher.module.scss'
 
-import { Button, Input, List, Tabs, Text, Textarea } from '@mantine/core';
+import { Button, Input, List, Tabs, Text, Textarea } from '@mantine/core'
 
 const Teacher = () => {
-  const teacherData = useSelector((state) => state.auth.user);
-  const authToken = teacherData.authToken;
+  const teacherData = useSelector((state) => state.auth.user)
+  const authToken = teacherData.authToken
 
-  const user = useSelector((state) => state.teacher);
-  const dispatch = useDispatch();
+  const user = useSelector((state) => state.teacher)
+  const dispatch = useDispatch()
 
   const getInformationAboutStudent = async (studentId) => {
     try {
-      const response = await axios.get(`http://localhost:5240/Student/${studentId}`);
-      console.log('1 student data: ', response);
-      dispatch(setStudent(response.data));
+      const response = await axios.get(`http://localhost:5240/Student/${studentId}`)
+      console.log('1 student data: ', response)
+      dispatch(setStudent(response.data))
     } catch (error) {
-      console.log('Ошибка при получении данных 1 студента: ', error);
-      throw error;
+      console.log('Ошибка при получении данных 1 студента: ', error)
+      throw error
     }
-  };
+  }
 
   const lessonsSearch = async (teacherID) => {
     try {
-      const response = await axios.get(`http://localhost:5240/Lesson/${teacherID}`);
-      console.log('Lessons data: ', response.data);
-      dispatch(setLessons(response.data));
-      return response.data;
+      const response = await axios.get(`http://localhost:5240/Lesson/${teacherID}`)
+      console.log('Lessons data: ', response.data)
+      dispatch(setLessons(response.data))
+      return response.data
     } catch (error) {
-      console.log('Ошибка при получении данных уроков: ', error);
-      throw error;
+      console.log('Ошибка при получении данных уроков: ', error)
+      throw error
     }
-  };
+  }
 
   const groupSearch = async (groupID) => {
     try {
-      const response = await axios.get(`http://localhost:5240/Group/${groupID}`);
-      console.log('Group data: ', response.data);
-      dispatch(setGroup(response.data));
-      return response.data;
+      const response = await axios.get(`http://localhost:5240/Group/${groupID}`)
+      console.log('Group data: ', response.data)
+      dispatch(setGroup(response.data))
+      return response.data
     } catch (error) {
-      console.log('Ошибка при получении данных группы: ', error);
-      throw error;
+      console.log('Ошибка при получении данных группы: ', error)
+      throw error
     }
-  };
+  }
 
   const searchStudentsFromGroup = async (groupID) => {
     try {
-      const response = await axios.get(`http://localhost:5240/Student/${groupID}/groupID`);
-      console.log('Students data: ', response.data);
-      dispatch(setStudentsInGroup({ groupID, students: response.data }));
-      return response.data;
+      const response = await axios.get(`http://localhost:5240/Student/${groupID}/groupID`)
+      console.log('Students data: ', response.data)
+      dispatch(setStudentsInGroup({ groupID, students: response.data }))
+      return response.data
     } catch (error) {
-      console.log('Ошибка при получении данных студентов из группы: ', error);
-      throw error;
+      console.log('Ошибка при получении данных студентов из группы: ', error)
+      throw error
     }
-  };
+  }
 
   useEffect(() => {
     const fetchTeacherData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5240/Teacher/${authToken}/authToken`);
-        console.log('Teacher data: ', response.data);
-        dispatch(setTeacher(response.data));
+        const response = await axios.get(`http://localhost:5240/Teacher/${authToken}/authToken`)
+        console.log('Teacher data: ', response.data)
+        dispatch(setTeacher(response.data))
 
-        const lessons = await lessonsSearch(response.data.teacherID);
-        setLessons(lessons);
-        const group = await groupSearch(lessons.groupID);
-        await searchStudentsFromGroup(group.groupID);
+        const lessons = await lessonsSearch(response.data.teacherID)
+        setLessons(lessons)
+        const group = await groupSearch(lessons.groupID)
+        await searchStudentsFromGroup(group.groupID)
+
+        // Initialize display state for each student
+        const initialDisplayState = group.students.reduce((acc, student) => {
+          acc[student.studentID] = false
+          return acc
+        }, {})
+        setDisplayMarks(initialDisplayState)
       } catch (error) {
-        console.log('Ошибка при получении данных в useEffect() : ', error);
+        console.log('Ошибка при получении данных в useEffect() : ', error)
       }
-    };
+    }
 
-    fetchTeacherData();
-  }, []);
+    fetchTeacherData()
+  }, [])
 
-  const [mark, setMark] = useState(0);
-  const [rating, setRating] = useState([]);
+  const [mark, setMark] = useState(0)
+  const [rating, setRating] = useState([])
 
   const getMarkForStudent = async (studentID, lessonID) => {
     try {
-      const res = await axios.get(`http://localhost:5240/Journal/${studentID}/studentID`);
+      const res = await axios.get(`http://localhost:5240/Journal/${studentID}/studentID`)
       for (let i = 0; i < res.data.length; i++) {
         if (res.data[i].lessonID === lessonID) {
-          setMark(res.data[i].mark);
-          setRating(res.data[i].rating);
+          setMark(res.data[i].mark)
+          setRating(res.data[i].rating)
+
+          // Step 4: Update display state only for the clicked student
+          setDisplayMarks((prevDisplayMarks) => ({
+            ...prevDisplayMarks,
+            [studentID]: !prevDisplayMarks[studentID],
+          }))
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const setMarkForStudent = async (teacherID, studentID, order) => {
     try {
-      const res = await axios.get(`http://localhost:5240/Lesson/${teacherID}`);
-      const lessonID = res.data.lessonID;
-      const journal = await axios.get(`http://localhost:5240/Journal/${lessonID}/lessonID`);
-      const mark = prompt('Напишите оценку');
-      await axios.put(`http://localhost:5240/Journal/${studentID}/${order}/${mark}`);
+      const res = await axios.get(`http://localhost:5240/Lesson/${teacherID}`)
+      const lessonID = res.data.lessonID
+      // const journal = await axios.get(`http://localhost:5240/Journal/${lessonID}/lessonID`);
+      const mark = prompt('Напишите оценку')
+      await axios.put(`http://localhost:5240/Journal/${studentID}/${lessonID}/${order}/${mark}`)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
-  const [publicationTitle, setPublicationTitle] = useState('');
-  const [publicationDescription, setPublicationDescription] = useState('');
+  const [publicationTitle, setPublicationTitle] = useState('')
+  const [publicationDescription, setPublicationDescription] = useState('')
 
   const setPublicationForStudent = async (e, title, description, lessonID) => {
-    e.preventDefault();
+    e.preventDefault()
     axios.post('http://localhost:5240/Addon', {
       addonHeader: title,
       addonDescription: description,
       lessonID: lessonID,
-    });
-    console.log('Запись добавлена');
-  };
+    })
+    console.log('Запись добавлена')
+  }
 
-  const [activeTab, setActiveTab] = useState('first');
+  const [activeTab, setActiveTab] = useState('first')
+
+  const [displayMarks, setDisplayMarks] = useState({})
+
+  // const openMarks = () => {
+  //   setFlagMark(!flagMark)
+  // }
 
   return (
     <div className={styles.container}>
@@ -147,11 +166,7 @@ const Teacher = () => {
         </div>
       </div>
       <div className={styles.contentBottom}>
-        <Tabs
-          className={styles.tabs}
-          value={activeTab}
-          onChange={setActiveTab}
-          orientation="vertical">
+        <Tabs className={styles.tabs} value={activeTab} onChange={setActiveTab} color="indigo">
           <Tabs.List className={styles.tabsList} grow>
             <Tabs.Tab value="first">Мои группы</Tabs.Tab>
             <Tabs.Tab value="second">Публикация материалов</Tabs.Tab>
@@ -173,25 +188,28 @@ const Teacher = () => {
                             {student.fullNameStudent}
                           </Text>
                           <div className={styles.gradesButtonBlock}>
-                            <div className={styles.actualGrades}>
-                              <Text size="xs">Оценка за зачет: {mark}</Text>
-                              <Text size="xs">
-                                Оценка за 1 рейтинг: {rating[0] ? rating[0] : 'Нет оценки'}
-                              </Text>
-                              <Text size="xs">
-                                Оценка за 2 рейтинг: {rating[1] ? rating[1] : 'Нет оценки'}
-                              </Text>
-                              <Text size="xs">
-                                Оценка за 3 рейтинг: {rating[2] ? rating[2] : 'Нет оценки'}
-                              </Text>
-                              <Button
-                                className={styles.actualGradesBlock}
-                                onClick={() =>
-                                  getMarkForStudent(student.studentID, user.lessons.lessonID)
-                                }>
-                                <Text size="md">Обновить оценки:</Text>
-                              </Button>
-                            </div>
+                            <Button
+                              className={styles.actualGradesBlock}
+                              onClick={() =>
+                                getMarkForStudent(student.studentID, user.lessons.lessonID)
+                              }>
+                              <Text size="md">Показать оценки: :</Text>
+                            </Button>
+                            {displayMarks[student.studentID] && (
+                              <div className={styles.actualGrades}>
+                                <Text size="xs">Оценка за зачет: {mark}</Text>
+                                <Text size="xs">
+                                  Оценка за 1 рейтинг: {rating[0] ? rating[0] : 'Нет оценки'}
+                                </Text>
+                                <Text size="xs">
+                                  Оценка за 2 рейтинг: {rating[1] ? rating[1] : 'Нет оценки'}
+                                </Text>
+                                <Text size="xs">
+                                  Оценка за 3 рейтинг: {rating[2] ? rating[2] : 'Нет оценки'}
+                                </Text>
+                              </div>
+                            )}
+
                             <div className={styles.actualGradesButtons}>
                               <Button
                                 className={styles.listButton}
@@ -260,7 +278,7 @@ const Teacher = () => {
         </Tabs>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Teacher;
+export default Teacher
