@@ -8,7 +8,6 @@ import {
   setPayment,
   setJournal,
   setSubjectName,
-  setTest,
 } from '../../store/slices/studentSlice';
 import { setAddon } from '../../store/slices/addonSlice';
 import styles from './Student.module.scss';
