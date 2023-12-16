@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setStudent, setMail, setPhone } from '../../store/slices/studentSlice';
-import { setAddon } from '../../store/slices/addonSlice';
 import styles from './Student.module.scss';
 import { setEvent } from '../../store/slices/eventSlice';
 
@@ -11,7 +10,6 @@ const Student = () => {
   const studentData = useSelector((state) => state.auth.user);
   const authToken = studentData.authToken;
   const user = useSelector((state) => state.student);
-  const addons = useSelector((state) => state.addon);
   const events = useSelector((state) => state.event);
   const dispatch = useDispatch();
 
@@ -25,8 +23,6 @@ const Student = () => {
       try {
         const response = await axios.get(`http://localhost:5240/Student/${authToken}/authToken`);
         dispatch(setStudent(response.data));
-        const resAddon = await axios.get(`http://localhost:5240/Addon`);
-        dispatch(setAddon(resAddon.data));
         const resEvent = await axios.get(`http://localhost:5240/Event`);
         dispatch(setEvent(resEvent.data));
       } catch (error) {
@@ -161,10 +157,14 @@ const Student = () => {
             ))}
           </Tabs.Panel>
           <Tabs.Panel value="five">
-            {addons.arr.map((addon) => (
+            {user.journal.map((journal) => (
               <div className={styles.paymentWrapAddon}>
-                <Text size="xl">{addon.addonHeader}</Text>
-                <a href="./">{addon.addonDescription}</a>
+                {journal.lessons.addons.map((addon) => (
+                  <>
+                    <Text size="xl">{addon.addonHeader}</Text>
+                    <a href="./">{addon.addonDescription}</a>
+                  </>
+                ))}
               </div>
             ))}
           </Tabs.Panel>

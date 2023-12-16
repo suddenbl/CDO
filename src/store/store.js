@@ -13,7 +13,6 @@ export const store = configureStore({
     student: studentSlice,
     teacher: teacherSlice,
     employee: empoloyeeSlice,
-    addon: addonSlice,
     event: eventSlice,
   },
 });
