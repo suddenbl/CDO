@@ -45,6 +45,7 @@ export const teacherSlice = createSlice({
     setMarks: (state, action) => {
       state.mark = action.payload.mark
       state.rating = action.payload.rating
+      console.log('setMarks', action.payload)
     },
   },
 })

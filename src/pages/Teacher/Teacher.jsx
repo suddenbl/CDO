@@ -4,12 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   setGroup,
   setLessons,
-  setMarks,
   setStudentsInGroup,
   setTeacher,
 } from '../../store/slices/teacherSlice'
 import styles from './Teacher.module.scss'
-
 import { Button, Input, List, Tabs, Text, Textarea } from '@mantine/core'
 
 const Teacher = () => {
@@ -18,17 +16,6 @@ const Teacher = () => {
 
   const user = useSelector((state) => state.teacher)
   const dispatch = useDispatch()
-
-  const getInformationAboutStudent = async (studentId) => {
-    try {
-      const response = await axios.get(`http://localhost:5240/Student/${studentId}`)
-      console.log('1 student data: ', response)
-      dispatch(setStudent(response.data))
-    } catch (error) {
-      console.log('Ошибка при получении данных 1 студента: ', error)
-      throw error
-    }
-  }
 
   const lessonsSearch = async (teacherID) => {
     try {
@@ -78,7 +65,6 @@ const Teacher = () => {
         const group = await groupSearch(lessons.groupID)
         await searchStudentsFromGroup(group.groupID)
 
-        // Initialize display state for each student
         const initialDisplayState = group.students.reduce((acc, student) => {
           acc[student.studentID] = false
           return acc
@@ -98,12 +84,11 @@ const Teacher = () => {
   const getMarkForStudent = async (studentID, lessonID) => {
     try {
       const res = await axios.get(`http://localhost:5240/Journal/${studentID}/studentID`)
+      console.log('getMarks', res.data)
       for (let i = 0; i < res.data.length; i++) {
         if (res.data[i].lessonID === lessonID) {
           setMark(res.data[i].mark)
           setRating(res.data[i].rating)
-
-          // Step 4: Update display state only for the clicked student
           setDisplayMarks((prevDisplayMarks) => ({
             ...prevDisplayMarks,
             [studentID]: !prevDisplayMarks[studentID],
@@ -141,12 +126,7 @@ const Teacher = () => {
   }
 
   const [activeTab, setActiveTab] = useState('first')
-
   const [displayMarks, setDisplayMarks] = useState({})
-
-  // const openMarks = () => {
-  //   setFlagMark(!flagMark)
-  // }
 
   return (
     <div className={styles.container}>
@@ -190,10 +170,8 @@ const Teacher = () => {
                           <div className={styles.gradesButtonBlock}>
                             <Button
                               className={styles.actualGradesBlock}
-                              onClick={() =>
-                                getMarkForStudent(student.studentID, user.lessons.lessonID)
-                              }>
-                              <Text size="md">Показать оценки: :</Text>
+                              onClick={() => getMarkForStudent(student.studentID)}>
+                              <Text size="md">Показать оценки:</Text>
                             </Button>
                             {displayMarks[student.studentID] && (
                               <div className={styles.actualGrades}>
@@ -212,21 +190,25 @@ const Teacher = () => {
 
                             <div className={styles.actualGradesButtons}>
                               <Button
+                                variant="outline"
                                 className={styles.listButton}
                                 onClick={() => setMarkForStudent(user.id, student.studentID, 1)}>
                                 <Text size="xs">Добавить оценку за зачет \ экзамен</Text>
                               </Button>
                               <Button
+                                variant="outline"
                                 className={styles.listButton}
                                 onClick={() => setMarkForStudent(user.id, student.studentID, 2)}>
                                 <Text size="xs">Добавить оценку за 1 рейтинг</Text>
                               </Button>
                               <Button
+                                variant="outline"
                                 className={styles.listButton}
                                 onClick={() => setMarkForStudent(user.id, student.studentID, 3)}>
                                 <Text size="xs">Добавить оценку за 2 рейтинг</Text>
                               </Button>
                               <Button
+                                variant="outline"
                                 className={styles.listButton}
                                 onClick={() => setMarkForStudent(user.id, student.studentID, 4)}>
                                 <Text size="xs">Добавить оценку за 3 рейтинг</Text>
