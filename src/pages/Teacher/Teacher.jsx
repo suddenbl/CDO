@@ -95,13 +95,18 @@ const Teacher = () => {
                   <Text size="xl">{lesson.subject.subjectName}</Text>
                   <Text size="xl">Аудитория : {lesson.classroom}</Text>
                   <div>
-                    <Text size="xl">Группа: {lesson.group.groupName}</Text>
+                    <Text size="lg">Группа: {lesson.group.groupName}</Text>
                     <List className={styles.groupsList} type="ordered" withPadding>
                       {lesson.group.students.map((student) => (
                         <List.Item key={student.studentID}>
-                          <Text size="xl">{student.fullNameStudent}</Text>
-                          <Text>Почта: {student.contactMailStudent}</Text>
+                          <Text styles={styles.studentName} size="lg">
+                            {student.fullNameStudent}
+                          </Text>
+                          <Text size="lg" className={styles.mail}>
+                            Почта: {student.contactMailStudent}
+                          </Text>
                           <Button
+                            size="xs"
                             onClick={() => {
                               setSelectedStudent(student.studentID)
                               getMarksForStudent(
@@ -110,7 +115,7 @@ const Teacher = () => {
                                 lesson.lessonID,
                               )
                             }}>
-                            <Text>Просмотреть оценки</Text>
+                            Просмотреть оценки
                           </Button>
                           <div>
                             <div className={styles.actualGrades}>
@@ -123,27 +128,31 @@ const Teacher = () => {
                                 </>
                               )}
                             </div>
-                            <Text size="xl">Поставить оценку:</Text>
+                            <Text>Поставить оценку:</Text>
                             <div className={styles.actualGradesButtons}>
                               <Button
+                                size="xs"
                                 onClick={() =>
                                   setMarkForStudent(selectedStudent, lesson.lessonID, 2)
                                 }>
                                 1 рейтинг
                               </Button>
                               <Button
+                                size="xs"
                                 onClick={() =>
                                   setMarkForStudent(selectedStudent, lesson.lessonID, 3)
                                 }>
                                 2 рейтинг
                               </Button>
                               <Button
+                                size="xs"
                                 onClick={() =>
                                   setMarkForStudent(selectedStudent, lesson.lessonID, 4)
                                 }>
                                 3 рейтинг
                               </Button>
                               <Button
+                                size="xs"
                                 onClick={() =>
                                   setMarkForStudent(selectedStudent, lesson.lessonID, 1)
                                 }>
