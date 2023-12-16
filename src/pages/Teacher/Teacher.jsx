@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTeacher } from '../../store/slices/teacherSlice'
 import styles from './Teacher.module.scss'
-import { Button, Input, List, Tabs, Text, Textarea } from '@mantine/core'
+import { Button, Input, List, Tabs, Text, Textarea, Select } from '@mantine/core'
 
 const Teacher = () => {
   const teacherAuth = useSelector((state) => state.auth.user)
@@ -11,6 +11,7 @@ const Teacher = () => {
   const user = useSelector((state) => state.teacher)
 
   const dispatch = useDispatch()
+  const [lessonNames, setLessonNames] = useState([])
 
   useEffect(() => {
     const fetchTeacherData = async () => {
@@ -18,6 +19,12 @@ const Teacher = () => {
         `http://localhost:5240/Teacher/${teacherAuthToken}/authToken`,
       )
       dispatch(setTeacher(response.data))
+
+      const lessonNames = response.data.lessons.map((lesson) => ({
+        value: lesson.lessonID.toString(),
+        label: lesson.subject.subjectName + ' - ' + lesson.classroom,
+      }))
+      setLessonNames(lessonNames)
       console.log('Teacher data: ', response.data)
     }
 
@@ -47,20 +54,27 @@ const Teacher = () => {
   }
 
   const pushPublication = async (e, title, description, lessonID) => {
-    e.preventDefault
+    e.preventDefault()
     try {
-      await axios.post('http://localhost:5240/Addon', {
+      // Convert lessonID to a number if necessary
+      const parsedLessonID = parseInt(lessonID, 10)
+
+      const response = await axios.post('http://localhost:5240/Addon', {
         addonHeader: title,
         addonDescription: description,
-        lessonID: lessonID,
+        lessonID: parsedLessonID,
       })
+
+      // Handle the response as needed
+      console.log('Publication successful:', response.data)
     } catch (error) {
-      console.log('Произошла ошибка при публикации материалов', error)
+      console.log('Error publishing materials:', error)
     }
   }
 
   const [publicationTitle, setPublicationTitle] = useState('')
   const [publicationDescription, setPublicationDescription] = useState('')
+  const [publicationLesson, setPublicationLesson] = useState('')
 
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [activeTab, setActiveTab] = useState('first')
@@ -188,15 +202,17 @@ const Teacher = () => {
                 value={publicationDescription}
                 onChange={(e) => setPublicationDescription(e.target.value)}
               />
+              <Text>Название занятие</Text>
+
+              <Select
+                data={lessonNames}
+                value={publicationLesson}
+                onChange={(value) => setPublicationLesson(value)}
+                placeholder="Выберите занятие"></Select>
               <Button
                 type="submit"
                 onClick={(e) =>
-                  pushPublication(
-                    e,
-                    publicationTitle,
-                    publicationDescription,
-                    user.lessons.lessonID,
-                  )
+                  pushPublication(e, publicationTitle, publicationDescription, publicationLesson)
                 }>
                 Опубликовать материал
               </Button>
