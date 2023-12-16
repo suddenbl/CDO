@@ -22,7 +22,7 @@ const Teacher = () => {
 
       const lessonNames = response.data.lessons.map((lesson) => ({
         value: lesson.lessonID.toString(),
-        label: lesson.subject.subjectName + ' - ' + lesson.classroom,
+        label: lesson.subject.subjectName + ' - ' + lesson.group.groupName,
       }))
       setLessonNames(lessonNames)
       console.log('Teacher data: ', response.data)
@@ -67,6 +67,11 @@ const Teacher = () => {
 
       // Handle the response as needed
       console.log('Publication successful:', response.data)
+
+      setPublicationTitle('')
+      setPublicationLesson([])
+      setPublicationDescription('')
+      alert('Публикация успешно создана')
     } catch (error) {
       console.log('Error publishing materials:', error)
     }
