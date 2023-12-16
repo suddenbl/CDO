@@ -2,42 +2,33 @@ import { Button, Input, Tabs, Text } from '@mantine/core';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  setGroup,
-  setStudent,
-  setPayment,
-  setJournal,
-  setSubjectName,
-} from '../../store/slices/studentSlice';
+import { setStudent, setMail, setPhone } from '../../store/slices/studentSlice';
 import { setAddon } from '../../store/slices/addonSlice';
 import styles from './Student.module.scss';
+import { setEvent } from '../../store/slices/eventSlice';
 
 const Student = () => {
   const studentData = useSelector((state) => state.auth.user);
   const authToken = studentData.authToken;
   const user = useSelector((state) => state.student);
   const addons = useSelector((state) => state.addon);
+  const events = useSelector((state) => state.event);
   const dispatch = useDispatch();
 
   const [activeTab, setActiveTab] = useState('one');
+
+  const [newMail, setNewMail] = useState('');
+  const [newPhone, setNewPhone] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:5240/Student/${authToken}/authToken`);
         dispatch(setStudent(response.data));
-        const group = await axios.get(`http://localhost:5240/Group/${response.data.groupID}`);
-        dispatch(setGroup(group.data));
-        const payment = await axios.get(
-          `http://localhost:5240/Payment/${response.data.studentID}/studentId`,
-        );
-        dispatch(setPayment(payment.data));
-        const journal = await axios.get(
-          `http://localhost:5240/Journal/${response.data.studentID}/studentId`,
-        );
-        dispatch(setJournal(journal.data));
-        const addon = await axios.get(`http://localhost:5240/Addon`);
-        dispatch(setAddon(addon.data));
+        const resAddon = await axios.get(`http://localhost:5240/Addon`);
+        dispatch(setAddon(resAddon.data));
+        const resEvent = await axios.get(`http://localhost:5240/Event`);
+        dispatch(setEvent(resEvent.data));
       } catch (error) {
         console.log('Проблема в получении данных студента', error);
       }
@@ -45,23 +36,16 @@ const Student = () => {
     fetchData();
   }, []);
 
-  const fetchSubject = async (lessonID) => {
-    const res = await axios.get(`http://localhost:5240/Lesson/${lessonID}`);
-    const ress = await axios.get(`http://localhost:5240/Subject/${res.data.subjectID}`);
-    dispatch(setSubjectName(ress.data));
-    console.log(user.subjectName);
-  };
-  let array = [];
-  const getArrSubjectName = async () => {
-    for (const i of user.journal) {
-      let temp = i.lessonID;
-      array.push(temp);
-    }
-    for (const i of array) {
-      fetchSubject(i);
-    }
-  };
   const dateOfBirth = new Date(user.age).toLocaleDateString('ru-RU');
+  const changeMail = (mail) => {
+    dispatch(setMail(mail));
+    axios.put(`http://localhost:5240/Student/${user.studentId}/5/${mail}`);
+  };
+  const changePhone = (phone) => {
+    dispatch(setPhone(phone));
+    axios.put(`http://localhost:5240/Student/${user.studentId}/6/${phone}`);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.content__top}>
@@ -76,7 +60,7 @@ const Student = () => {
           <Text size="xl">ФИО: {user.name}</Text>
           <Text size="xl">Пол: {user.gender == true ? 'Мужской ' : 'Женский'}</Text>
           <Text size="xl">Дата рождения: {dateOfBirth}</Text>
-          <Text size="xl">Группа: {user.groupName}</Text>
+          <Text size="xl">Группа: {user.group}</Text>
           <Text size="xl">
             Источник финансирования: {user.budget == true ? 'Бюджет' : 'Платник'}
           </Text>
@@ -85,36 +69,48 @@ const Student = () => {
         </div>
       </div>
       <div className={styles.contentBottom}>
-        <Tabs
-          className={styles.tabs}
-          value={activeTab}
-          onChange={setActiveTab}
-          orientation="vertical">
+        <Tabs className={styles.tabs} value={activeTab} onChange={setActiveTab}>
           <Tabs.List className={styles.tabsList} grow>
             <Tabs.Tab value="one">Внесение данных о студенте</Tabs.Tab>
             <Tabs.Tab value="two">Узнать стипендию</Tabs.Tab>
             <Tabs.Tab value="three">Узнать задолжности</Tabs.Tab>
-            <Tabs.Tab value="four" onClick={() => getArrSubjectName()}>
-              Узнать оценки
-            </Tabs.Tab>
+            <Tabs.Tab value="four">Узнать оценки</Tabs.Tab>
             <Tabs.Tab value="five">Просмотреть лекционный материал</Tabs.Tab>
+            <Tabs.Tab value="six">Просмотреть расписание</Tabs.Tab>
+            <Tabs.Tab value="seven">Мероприятия</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="one">
             <div className={styles.paymentWrapEdit}>
-              <Input size="md" placeholder="Новая почта" />
-              <Button size="md" variant="filled">
+              <Input
+                size="md"
+                placeholder="Новая почта"
+                value={newMail}
+                onChange={(e) => setNewMail(e.target.value)}
+              />
+              <Button
+                size="md"
+                variant="filled"
+                onClick={() => (changeMail(newMail), setNewMail(''))}>
                 Отправить
               </Button>
-              <Input size="md" placeholder="Новый номер телефона" />
-              <Button size="md" variant="filled">
+              <Input
+                size="md"
+                placeholder="Новый номер телефона"
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+              />
+              <Button
+                size="md"
+                variant="filled"
+                onClick={() => (changePhone(newPhone), setNewPhone(''))}>
                 Отправить
               </Button>
             </div>
           </Tabs.Panel>
           <Tabs.Panel value="two">
-            {user.payment.map((payment) =>
+            {user.payments.map((payment) =>
               payment.paymentDirection ? (
-                <div className={styles.paymentWrap}>
+                <div className={styles.paymentWrapPayment}>
                   <Text size="xl">{payment.paymentCost} руб</Text>
                   <Text size="xl">{payment.paymentType}</Text>
                   <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
@@ -125,9 +121,9 @@ const Student = () => {
             )}
           </Tabs.Panel>
           <Tabs.Panel value="three">
-            {user.payment.map((payment) =>
+            {user.payments.map((payment) =>
               !payment.paymentDirection ? (
-                <div className={styles.paymentWrap}>
+                <div className={styles.paymentWrapPayment}>
                   <Text size="xl">{payment.paymentCost} руб</Text>
                   <Text size="xl">{payment.paymentType}</Text>
                   <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
@@ -138,23 +134,49 @@ const Student = () => {
             )}
           </Tabs.Panel>
           <Tabs.Panel value="four">
-            {user.journal.map((journal, i) => (
+            {user.journal.map((journal) => (
               <div className={styles.paymentWrap}>
-                <Text size="xl">{user.subjectName[i]}</Text>
-                <Text size="xl">Зачет: {journal.mark}</Text>
-                {journal.rating.map((rating, index) => (
-                  <Text size="xl">
-                    Рейтинг {index + 1}: {rating}
-                  </Text>
-                ))}
+                <Text size="xl">{journal.lessons.subject.subjectName}</Text>
+                {journal.mark === null ? (
+                  <Text size="xl">Экзамен/Зачет: </Text>
+                ) : journal.mark === ('зачет' || 'незачет' || 'Зачет' || 'Незачет') ? (
+                  <Text size="xl">Зачет: {journal.mark}</Text>
+                ) : (
+                  <Text size="xl">Экзамен: {journal.mark}</Text>
+                )}
+                {journal.rating === null ? (
+                  <>
+                    <Text size="xl">Рейтинг 1:</Text>
+                    <Text size="xl">Рейтинг 2:</Text>
+                    <Text size="xl">Рейтинг 3:</Text>
+                  </>
+                ) : (
+                  journal.rating.map((rating, index) => (
+                    <Text size="xl">
+                      Рейтинг {index + 1}: {rating}
+                    </Text>
+                  ))
+                )}
               </div>
             ))}
           </Tabs.Panel>
           <Tabs.Panel value="five">
             {addons.arr.map((addon) => (
-              <div className={styles.paymentWrap}>
+              <div className={styles.paymentWrapAddon}>
                 <Text size="xl">{addon.addonHeader}</Text>
                 <a href="./">{addon.addonDescription}</a>
+              </div>
+            ))}
+          </Tabs.Panel>
+          <Tabs.Panel value="six">
+            <div className={styles.paymentWrap}></div>
+          </Tabs.Panel>
+          <Tabs.Panel value="seven">
+            {events.arr.map((event) => (
+              <div className={styles.paymentWrapEvent}>
+                <Text size="xl">{event.eventHeader}</Text>
+                <Text size="xl">{event.eventDescription}</Text>
+                <Text size="xl">{event.eventDate.replace('T', ' Время: ')}</Text>
               </div>
             ))}
           </Tabs.Panel>

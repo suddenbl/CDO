@@ -3,18 +3,15 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   studentId: 0,
   name: 'string',
-  groupName: 'string',
   gender: false,
   authToken: 0,
   age: 0,
-  admissionTime: 'string',
-  contactMailStudent: 'string',
-  contactPhoneStudent: 'string',
+  contactMail: 'string',
+  contactPhone: 'string',
   budget: true,
-  payment: [],
+  payments: [],
   journal: [],
-  subjectName: [],
-  test: {},
+  group: 'string',
 };
 
 export const studentSlice = createSlice({
@@ -24,30 +21,24 @@ export const studentSlice = createSlice({
     setStudent: (state, action) => {
       state.studentId = action.payload.studentID;
       state.name = action.payload.fullNameStudent;
-      state.groupName = '';
       state.gender = action.payload.gender;
       state.authToken = action.payload.authToken;
       state.age = action.payload.age;
-      state.admissionTime = action.payload.admissionTime;
       state.contactMail = action.payload.contactMailStudent;
       state.contactPhone = action.payload.contactPhoneStudent;
       state.budget = action.payload.budget;
+      state.payments = action.payload.payments;
+      state.journal = action.payload.journal;
+      state.group = action.payload.group.groupName;
     },
-    setGroup: (state, action) => {
-      state.groupName = action.payload.groupName;
+    setPhone: (state, action) => {
+      state.contactPhone = action.payload;
     },
-    setPayment: (state, action) => {
-      state.payment = action.payload;
-    },
-    setJournal: (state, action) => {
-      state.journal = action.payload;
-    },
-    setSubjectName: (state, action) => {
-      state.subjectName = [...state.subjectName, action.payload.subjectName];
+    setMail: (state, action) => {
+      state.contactMail = action.payload;
     },
   },
 });
 
-export const { setStudent, setGroup, setPayment, setJournal, setSubjectName } =
-  studentSlice.actions;
+export const { setStudent, setPhone, setMail } = studentSlice.actions;
 export default studentSlice.reducer;

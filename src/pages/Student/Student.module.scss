@@ -22,15 +22,33 @@
 
   .contentBottom {
     .paymentWrap {
-      padding-left: 30px;
+      padding-top: 15px;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
+      column-gap: 15px;
       &Edit {
         display: flex;
         gap: 15px;
-        padding-left: 30px;
-        padding-right: 30px;
+        padding-top: 15px;
         flex-wrap: wrap;
+      }
+      &Payment {
+        padding-top: 15px;
+        display: grid;
+        column-gap: 15px;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      &Addon {
+        padding-top: 15px;
+        display: grid;
+        column-gap: 15px;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      &Event {
+        padding-top: 15px;
+        display: grid;
+        column-gap: 15px;
+        grid-template-columns: repeat(3, 1fr);
       }
     }
   }

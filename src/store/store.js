@@ -4,6 +4,7 @@ import studentSlice from './slices/studentSlice';
 import teacherSlice from './slices/teacherSlice';
 import empoloyeeSlice from './slices/empoloyeeSlice';
 import addonSlice from './slices/addonSlice';
+import eventSlice from './slices/eventSlice';
 
 /* eslint-disable no-underscore-dangle */
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     teacher: teacherSlice,
     employee: empoloyeeSlice,
     addon: addonSlice,
+    event: eventSlice,
   },
 });
 /* eslint-enable */
