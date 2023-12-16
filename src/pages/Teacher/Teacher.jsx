@@ -1,153 +1,69 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  setGroup,
-  setLessons,
-  setMarks,
-  setStudentsInGroup,
-  setTeacher,
-} from '../../store/slices/teacherSlice'
+import { setTeacher } from '../../store/slices/teacherSlice'
 import styles from './Teacher.module.scss'
-
 import { Button, Input, List, Tabs, Text, Textarea } from '@mantine/core'
 
 const Teacher = () => {
-  const teacherData = useSelector((state) => state.auth.user)
-  const authToken = teacherData.authToken
-
+  const teacherAuth = useSelector((state) => state.auth.user)
+  const teacherAuthToken = teacherAuth.authToken
   const user = useSelector((state) => state.teacher)
+
   const dispatch = useDispatch()
-
-  const getInformationAboutStudent = async (studentId) => {
-    try {
-      const response = await axios.get(`http://localhost:5240/Student/${studentId}`)
-      console.log('1 student data: ', response)
-      dispatch(setStudent(response.data))
-    } catch (error) {
-      console.log('Ошибка при получении данных 1 студента: ', error)
-      throw error
-    }
-  }
-
-  const lessonsSearch = async (teacherID) => {
-    try {
-      const response = await axios.get(`http://localhost:5240/Lesson/${teacherID}`)
-      console.log('Lessons data: ', response.data)
-      dispatch(setLessons(response.data))
-      return response.data
-    } catch (error) {
-      console.log('Ошибка при получении данных уроков: ', error)
-      throw error
-    }
-  }
-
-  const groupSearch = async (groupID) => {
-    try {
-      const response = await axios.get(`http://localhost:5240/Group/${groupID}`)
-      console.log('Group data: ', response.data)
-      dispatch(setGroup(response.data))
-      return response.data
-    } catch (error) {
-      console.log('Ошибка при получении данных группы: ', error)
-      throw error
-    }
-  }
-
-  const searchStudentsFromGroup = async (groupID) => {
-    try {
-      const response = await axios.get(`http://localhost:5240/Student/${groupID}/groupID`)
-      console.log('Students data: ', response.data)
-      dispatch(setStudentsInGroup({ groupID, students: response.data }))
-      return response.data
-    } catch (error) {
-      console.log('Ошибка при получении данных студентов из группы: ', error)
-      throw error
-    }
-  }
 
   useEffect(() => {
     const fetchTeacherData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5240/Teacher/${authToken}/authToken`)
-        console.log('Teacher data: ', response.data)
-        dispatch(setTeacher(response.data))
-
-        const lessons = await lessonsSearch(response.data.teacherID)
-        setLessons(lessons)
-        const group = await groupSearch(lessons.groupID)
-        await searchStudentsFromGroup(group.groupID)
-
-        // Initialize display state for each student
-        const initialDisplayState = group.students.reduce((acc, student) => {
-          acc[student.studentID] = false
-          return acc
-        }, {})
-        setDisplayMarks(initialDisplayState)
-      } catch (error) {
-        console.log('Ошибка при получении данных в useEffect() : ', error)
-      }
+      const response = await axios.get(
+        `http://localhost:5240/Teacher/${teacherAuthToken}/authToken`,
+      )
+      dispatch(setTeacher(response.data))
+      console.log('Teacher data: ', response.data)
     }
 
     fetchTeacherData()
   }, [])
 
-  const [mark, setMark] = useState(0)
-  const [rating, setRating] = useState([])
+  const [marks, setMarks] = useState({})
 
-  const getMarkForStudent = async (studentID, lessonID) => {
+  const getMarksForStudent = async (studentID, groupID, lessonID) => {
     try {
-      const res = await axios.get(`http://localhost:5240/Journal/${studentID}/studentID`)
-      for (let i = 0; i < res.data.length; i++) {
-        if (res.data[i].lessonID === lessonID) {
-          setMark(res.data[i].mark)
-          setRating(res.data[i].rating)
-
-          // Step 4: Update display state only for the clicked student
-          setDisplayMarks((prevDisplayMarks) => ({
-            ...prevDisplayMarks,
-            [studentID]: !prevDisplayMarks[studentID],
-          }))
-        }
-      }
+      const marks = await axios.get(
+        `http://localhost:5240/Journal/${studentID}/${groupID}/${lessonID}`,
+      )
+      setMarks(marks.data)
     } catch (error) {
-      console.log(error)
+      console.log('Ошибка при получении оценок студента', error)
     }
   }
 
-  const setMarkForStudent = async (teacherID, studentID, order) => {
+  const setMarkForStudent = async (studentID, lessonID, param) => {
     try {
-      const res = await axios.get(`http://localhost:5240/Lesson/${teacherID}`)
-      const lessonID = res.data.lessonID
-      // const journal = await axios.get(`http://localhost:5240/Journal/${lessonID}/lessonID`);
-      const mark = prompt('Напишите оценку')
-      await axios.put(`http://localhost:5240/Journal/${studentID}/${lessonID}/${order}/${mark}`)
+      const value = window.prompt('Какую оценку поставим нашему непутёвому?')
+      axios.put(`http://localhost:5240/Journal/${studentID}/${lessonID}/${param}/${value}`)
     } catch (error) {
-      console.log(error)
+      console.log('Произошла ошибка при выставлении оценки: ', error)
+    }
+  }
+
+  const pushPublication = async (e, title, description, lessonID) => {
+    e.preventDefault
+    try {
+      await axios.post('http://localhost:5240/Addon', {
+        addonHeader: title,
+        addonDescription: description,
+        lessonID: lessonID,
+      })
+    } catch (error) {
+      console.log('Произошла ошибка при публикации материалов', error)
     }
   }
 
   const [publicationTitle, setPublicationTitle] = useState('')
   const [publicationDescription, setPublicationDescription] = useState('')
 
-  const setPublicationForStudent = async (e, title, description, lessonID) => {
-    e.preventDefault()
-    axios.post('http://localhost:5240/Addon', {
-      addonHeader: title,
-      addonDescription: description,
-      lessonID: lessonID,
-    })
-    console.log('Запись добавлена')
-  }
-
+  const [selectedStudent, setSelectedStudent] = useState(null)
   const [activeTab, setActiveTab] = useState('first')
-
-  const [displayMarks, setDisplayMarks] = useState({})
-
-  // const openMarks = () => {
-  //   setFlagMark(!flagMark)
-  // }
-
   return (
     <div className={styles.container}>
       <div className={styles.content__top}>
@@ -159,7 +75,7 @@ const Teacher = () => {
         <div className={styles.userInfo}>
           <div className={styles.userInfoList}>
             <Text size="xl">ФИО: {user.name}</Text>
-            <Text size="xl">Должность: преподаватель</Text>
+            <Text size="xl">Должность: {user.jobTitles.jobName}</Text>
             <Text size="xl">Номер телефона: {user.contactPhone}</Text>
             <Text size="xl">Почта: {user.contactMail}</Text>
           </div>
@@ -168,75 +84,77 @@ const Teacher = () => {
       <div className={styles.contentBottom}>
         <Tabs className={styles.tabs} value={activeTab} onChange={setActiveTab} color="indigo">
           <Tabs.List className={styles.tabsList} grow>
-            <Tabs.Tab value="first">Мои группы</Tabs.Tab>
-            <Tabs.Tab value="second">Публикация материалов</Tabs.Tab>
+            <Tabs.Tab value="first">Мои занятия</Tabs.Tab>
+            <Tabs.Tab value="second">Публикация материалов для студентов</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="first">
-            <Text size="xl" className={styles.listTitle}>
-              Список групп:{' '}
-            </Text>
-            <List type="unordered" withPadding>
-              {user.group.map((group) => (
-                <List.Item key={group.groupID}>
-                  <Text size="lg">{group.groupName}</Text>
-                  {group.students && (
-                    <List type="ordered">
-                      {group.students.map((student) => (
+            <List className={styles.lessonsList} type="ordered" withPadding>
+              {user.lessons.map((lesson) => (
+                <List.Item key={lesson.lessonID}>
+                  <Text size="xl">{lesson.subject.subjectName}</Text>
+                  <Text size="xl">Аудитория : {lesson.classroom}</Text>
+                  <div>
+                    <Text size="xl">Группа: {lesson.group.groupName}</Text>
+                    <List className={styles.groupsList} type="ordered" withPadding>
+                      {lesson.group.students.map((student) => (
                         <List.Item key={student.studentID}>
-                          <Text size="md" className={styles.mb10}>
-                            {student.fullNameStudent}
-                          </Text>
-                          <div className={styles.gradesButtonBlock}>
-                            <Button
-                              className={styles.actualGradesBlock}
-                              onClick={() =>
-                                getMarkForStudent(student.studentID, user.lessons.lessonID)
-                              }>
-                              <Text size="md">Показать оценки: :</Text>
-                            </Button>
-                            {displayMarks[student.studentID] && (
-                              <div className={styles.actualGrades}>
-                                <Text size="xs">Оценка за зачет: {mark}</Text>
-                                <Text size="xs">
-                                  Оценка за 1 рейтинг: {rating[0] ? rating[0] : 'Нет оценки'}
-                                </Text>
-                                <Text size="xs">
-                                  Оценка за 2 рейтинг: {rating[1] ? rating[1] : 'Нет оценки'}
-                                </Text>
-                                <Text size="xs">
-                                  Оценка за 3 рейтинг: {rating[2] ? rating[2] : 'Нет оценки'}
-                                </Text>
-                              </div>
-                            )}
-
+                          <Text size="xl">{student.fullNameStudent}</Text>
+                          <Text>Почта: {student.contactMailStudent}</Text>
+                          <Button
+                            onClick={() => {
+                              setSelectedStudent(student.studentID)
+                              getMarksForStudent(
+                                student.studentID,
+                                student.groupID,
+                                lesson.lessonID,
+                              )
+                            }}>
+                            <Text>Просмотреть оценки</Text>
+                          </Button>
+                          <div>
+                            <div className={styles.actualGrades}>
+                              {selectedStudent === student.studentID && marks.rating && (
+                                <>
+                                  <Text>Зачет\экзамен: {marks.mark}</Text>
+                                  <Text>Рейтинг 1: {marks.rating[0]}</Text>
+                                  <Text>Рейтинг 2: {marks.rating[1]}</Text>
+                                  <Text>Рейтинг 3: {marks.rating[2]}</Text>
+                                </>
+                              )}
+                            </div>
+                            <Text size="xl">Поставить оценку:</Text>
                             <div className={styles.actualGradesButtons}>
                               <Button
-                                className={styles.listButton}
-                                onClick={() => setMarkForStudent(user.id, student.studentID, 1)}>
-                                <Text size="xs">Добавить оценку за зачет \ экзамен</Text>
+                                onClick={() =>
+                                  setMarkForStudent(selectedStudent, lesson.lessonID, 2)
+                                }>
+                                1 рейтинг
                               </Button>
                               <Button
-                                className={styles.listButton}
-                                onClick={() => setMarkForStudent(user.id, student.studentID, 2)}>
-                                <Text size="xs">Добавить оценку за 1 рейтинг</Text>
+                                onClick={() =>
+                                  setMarkForStudent(selectedStudent, lesson.lessonID, 3)
+                                }>
+                                2 рейтинг
                               </Button>
                               <Button
-                                className={styles.listButton}
-                                onClick={() => setMarkForStudent(user.id, student.studentID, 3)}>
-                                <Text size="xs">Добавить оценку за 2 рейтинг</Text>
+                                onClick={() =>
+                                  setMarkForStudent(selectedStudent, lesson.lessonID, 4)
+                                }>
+                                3 рейтинг
                               </Button>
                               <Button
-                                className={styles.listButton}
-                                onClick={() => setMarkForStudent(user.id, student.studentID, 4)}>
-                                <Text size="xs">Добавить оценку за 3 рейтинг</Text>
+                                onClick={() =>
+                                  setMarkForStudent(selectedStudent, lesson.lessonID, 1)
+                                }>
+                                Зачет\Экзамен
                               </Button>
                             </div>
                           </div>
                         </List.Item>
                       ))}
                     </List>
-                  )}
+                  </div>
                 </List.Item>
               ))}
             </List>
@@ -247,14 +165,14 @@ const Teacher = () => {
               Что хотим опубликовать?
             </Text>
             <form className={styles.publishForm}>
-              <Text>Заголовок объявления</Text>
+              <Text>Заголовок</Text>
               <Input
                 size="md"
                 type="text"
                 value={publicationTitle}
                 onChange={(e) => setPublicationTitle(e.target.value)}
               />
-              <Text>Текст объявления</Text>
+              <Text>Текст</Text>
               <Textarea
                 size="md"
                 className={styles.textarea}
@@ -264,7 +182,7 @@ const Teacher = () => {
               <Button
                 type="submit"
                 onClick={(e) =>
-                  setPublicationForStudent(
+                  pushPublication(
                     e,
                     publicationTitle,
                     publicationDescription,

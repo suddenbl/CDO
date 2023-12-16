@@ -75,4 +75,16 @@
       max-width: 200px;
     }
   }
+
+  .lessonsList {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .groupsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 }

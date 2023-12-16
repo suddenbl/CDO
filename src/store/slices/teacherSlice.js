@@ -6,8 +6,8 @@ const initialState = {
   contactPhoneTeacher: 'string',
   id: null,
   authToken: null,
+  jobTitles: {},
   lessons: [],
-  group: [],
 }
 
 export const teacherSlice = createSlice({
@@ -20,35 +20,12 @@ export const teacherSlice = createSlice({
       state.contactPhone = action.payload.contactPhoneTeacher
       state.id = action.payload.teacherID
       state.authToken = action.payload.authToken
-      state.jobId = action.payload.jobId
-    },
-    setLessons: (state, action) => {
-      state.lessons = action.payload
-    },
-    setGroup: (state, action) => {
-      const existingGroupIndex = state.group.findIndex(
-        (group) => group.groupID === action.payload.groupID,
-      )
-      if (existingGroupIndex !== -1) {
-        state.group[existingGroupIndex] = action.payload
-      } else {
-        state.group = [...state.group, action.payload]
-      }
-    },
-    setStudentsInGroup: (state, action) => {
-      const { groupID, students } = action.payload
-      const groupIndex = state.group.findIndex((group) => group.groupID === groupID)
-      if (groupIndex !== -1) {
-        state.group[groupIndex].students = students
-      }
-    },
-    setMarks: (state, action) => {
-      state.mark = action.payload.mark
-      state.rating = action.payload.rating
+      state.jobTitles = action.payload.jobTitles
+      state.group = action.payload.group
+      state.lessons = action.payload.lessons
     },
   },
 })
 
-export const { setTeacher, setLessons, setGroup, setStudentsInGroup, setMarks } =
-  teacherSlice.actions
+export const { setTeacher } = teacherSlice.actions
 export default teacherSlice.reducer
