@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../../store/slices/authSlice'
 import styles from './Login.module.scss'
-
 import { Button, Input, Title } from '@mantine/core'
 
 export const userTypes = {
@@ -33,7 +32,11 @@ const Login = () => {
         return res.data
       })
       .then((res) => {
-        navigate(`/${res.type}/${res.authToken}`)
+        if (res.type == 'employee') {
+          navigate(`/${res.type}/${res.employee.jobID}/${res.authToken}`)
+        } else {
+          navigate(`/${res.type}/${res.authToken}`)
+        }
       })
       .catch((error) => {
         console.error('все хуёво', error)

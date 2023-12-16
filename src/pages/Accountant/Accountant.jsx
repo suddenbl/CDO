@@ -1,40 +1,41 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setEmployee } from '../../store/slices/empoloyeeSlice';
-import styles from './Employee.module.scss';
-import { Button, Input, List, Tabs, Text, Textarea } from '@mantine/core';
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setAccountant } from '../../store/slices/accountantSlice'
+import styles from './Accountant.module.scss'
+import { Text } from '@mantine/core'
 
-function Employee() {
-  const employeeData = useSelector((state) => state.auth.user);
-  const authToken = employeeData.authToken;
+function Accountant() {
+  const accountantData = useSelector((state) => state.auth.user)
+  const authToken = accountantData.authToken
 
-  const user = useSelector((state) => state.employee);
-  const dispatch = useDispatch();
+  const user = useSelector((state) => state.accountant)
+  const dispatch = useDispatch()
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5240/Employee/${authToken}/authToken`);
-        dispatch(setEmployee(response.data));
+        const response = await axios.get(`http://localhost:5240/Employee/${authToken}/authToken`)
+        dispatch(setAccountant(response.data))
       } catch (error) {
-        console.log('Проблема в получении данных работника', error);
+        console.log('Проблема в получении данных работника', error)
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
-  const [inputOne, setInputOne] = useState('');
-  const [inputTwo, setInputTwo] = useState('');
+  const [inputOne, setInputOne] = useState('')
+  const [inputTwo, setInputTwo] = useState('')
   async function submitPayment(e) {
-    e.preventDefault();
+    e.preventDefault()
     axios.post('http://localhost:5240/Payment', {
       paymentType: 'Выплата стипендии',
       paymentCost: +inputOne,
       paymentDate: new Date(),
       studentID: +inputTwo,
-    });
-    setInputOne('');
-    setInputTwo('');
+    })
+    setInputOne('')
+    setInputTwo('')
   }
   return (
     <div className={styles.container}>
@@ -46,10 +47,10 @@ function Employee() {
         />
         <div className={styles.userInfo}>
           <div className={styles.userInfoList}>
-            <Text size="xl">ФИО: {user.fullNameEmployee}</Text>
+            <Text size="xl">ФИО: {user.fullNameAccountant}</Text>
             <Text size="xl">Должность: Бухгалтер</Text>
-            <Text size="xl">Номер телефона: {user.contactMailEmployee}</Text>
-            <Text size="xl">Почта: {user.contactPhoneEmployee}</Text>
+            <Text size="xl">Номер телефона: {user.contactMailAccountant}</Text>
+            <Text size="xl">Почта: {user.contactPhoneAccountant}</Text>
           </div>
         </div>
       </div>
@@ -76,6 +77,6 @@ function Employee() {
         </div>
       </div>
     </div>
-  );
+  )
 }
-export default Employee;
+export default Accountant

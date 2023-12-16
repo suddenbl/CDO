@@ -56,7 +56,6 @@ const Teacher = () => {
   const pushPublication = async (e, title, description, lessonID) => {
     e.preventDefault()
     try {
-      // Convert lessonID to a number if necessary
       const parsedLessonID = parseInt(lessonID, 10)
 
       const response = await axios.post('http://localhost:5240/Addon', {
@@ -65,7 +64,6 @@ const Teacher = () => {
         lessonID: parsedLessonID,
       })
 
-      // Handle the response as needed
       console.log('Publication successful:', response.data)
 
       setPublicationTitle('')
