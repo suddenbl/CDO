@@ -1,42 +1,65 @@
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { setAccountant } from '../../store/slices/accountantSlice'
-import styles from './Accountant.module.scss'
-import { Text } from '@mantine/core'
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setAccountant,
+  setStudentBudget,
+  setStudentNotBudget,
+} from '../../store/slices/accountantSlice';
+import styles from './Accountant.module.scss';
+import { Text, Input, Button, Tabs } from '@mantine/core';
 
 function Accountant() {
-  const accountantData = useSelector((state) => state.auth.user)
-  const authToken = accountantData.authToken
+  const accountantData = useSelector((state) => state.auth.user);
+  const authToken = accountantData.authToken;
 
-  const user = useSelector((state) => state.accountant)
-  const dispatch = useDispatch()
+  const user = useSelector((state) => state.accountant);
+  const dispatch = useDispatch();
+
+  const [activeTab, setActiveTab] = useState('one');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5240/Employee/${authToken}/authToken`)
-        dispatch(setAccountant(response.data))
+        const response = await axios.get(`http://localhost:5240/Employee/${authToken}/authToken`);
+        dispatch(setAccountant(response.data));
+        const resStudentBudget = await axios.get('http://localhost:5240/Student/true/budget');
+        dispatch(setStudentBudget(resStudentBudget.data));
+        const resStudentNotBudget = await axios.get('http://localhost:5240/Student/false/budget');
+        dispatch(setStudentNotBudget(resStudentNotBudget.data));
       } catch (error) {
-        console.log('Проблема в получении данных работника', error)
+        console.log('Проблема в получении данных работника', error);
       }
-    }
-    fetchData()
-  }, [])
+    };
+    fetchData();
+  }, []);
 
-  const [inputOne, setInputOne] = useState('')
-  const [inputTwo, setInputTwo] = useState('')
-  async function submitPayment(e) {
-    e.preventDefault()
-    axios.post('http://localhost:5240/Payment', {
-      paymentType: 'Выплата стипендии',
-      paymentCost: +inputOne,
-      paymentDate: new Date(),
-      studentID: +inputTwo,
-    })
-    setInputOne('')
-    setInputTwo('')
-  }
+  const [grant, setGrant] = useState('');
+  const postGrant = (grant) => {
+    for (const student of user.studentBudget) {
+      axios.post('http://localhost:5240/Payment', {
+        paymentType: 'Выплата стипендии',
+        paymentCost: +grant,
+        paymentDate: new Date(),
+        studentID: student.studentID,
+        paymentDirection: true,
+      });
+      setGrant('');
+    }
+  };
+  const [credit, setCredit] = useState('');
+  const postCredit = (credit) => {
+    for (const student of user.studentNotBudget) {
+      axios.post('http://localhost:5240/Payment', {
+        paymentType: 'Задолжность за оплату обучение',
+        paymentCost: +credit,
+        paymentDate: new Date(),
+        studentID: student.studentID,
+        paymentDirection: false,
+      });
+      setCredit('');
+    }
+  };
   return (
     <div className={styles.container}>
       <div className={styles.content__top}>
@@ -55,28 +78,38 @@ function Accountant() {
         </div>
       </div>
       <div className={styles.contentBottom}>
-        <div>
-          <h2>Проставить стипендию</h2>
-          <form onSubmit={submitPayment}>
-            <input
-              required
-              type="number"
-              placeholder="Сумма"
-              value={inputOne}
-              onChange={(event) => setInputOne(event.target.value)}
+        <Tabs className={styles.tabs} value={activeTab} onChange={setActiveTab}>
+          <Tabs.List className={styles.tabsList} grow>
+            <Tabs.Tab value="one">Проставить стипендию</Tabs.Tab>
+            <Tabs.Tab value="two">Проставить задолжность за учебу</Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panel value="one">
+            <h2>Проставить стипендию</h2>
+            <Input
+              size="md"
+              placeholder="Стипендия"
+              value={grant}
+              onChange={(e) => setGrant(e.target.value)}
             />
-            <input
-              required
-              type="number"
-              placeholder="ID студента"
-              value={inputTwo}
-              onChange={(event) => setInputTwo(event.target.value)}
+            <Button size="md" variant="filled" onClick={() => postGrant(grant)}>
+              Отправить
+            </Button>
+          </Tabs.Panel>
+          <Tabs.Panel value="two">
+            <h2>Проставить задолжность за оплату обучение</h2>
+            <Input
+              size="md"
+              placeholder="Задолжность за оплату обучение"
+              value={credit}
+              onChange={(e) => setCredit(e.target.value)}
             />
-            <button>Отправить</button>
-          </form>
-        </div>
+            <Button size="md" variant="filled" onClick={() => postCredit(credit)}>
+              Отправить
+            </Button>
+          </Tabs.Panel>
+        </Tabs>
       </div>
     </div>
-  )
+  );
 }
-export default Accountant
+export default Accountant;

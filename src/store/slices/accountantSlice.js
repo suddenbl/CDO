@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   accountantID: 0,
@@ -7,22 +7,30 @@ const initialState = {
   contactPhoneAccountant: 'string',
   authToken: 0,
   jobID: 0,
-}
+  studentBudget: [],
+  studentNotBudget: [],
+};
 
 export const accountantSlice = createSlice({
   name: 'accountant',
   initialState,
   reducers: {
     setAccountant: (state, action) => {
-      state.accountantID = action.payload.employeeID
-      state.fullNameAccountant = action.payload.fullNameEmployee
-      state.contactMailAccountant = action.payload.contactMailEmployee
-      state.contactPhoneAccountant = action.payload.contactPhoneEmployee
-      state.authToken = action.payload.authToken
-      state.jobID = action.payload.jobID
+      state.accountantID = action.payload.employeeID;
+      state.fullNameAccountant = action.payload.fullNameEmployee;
+      state.contactMailAccountant = action.payload.contactMailEmployee;
+      state.contactPhoneAccountant = action.payload.contactPhoneEmployee;
+      state.authToken = action.payload.authToken;
+      state.jobID = action.payload.jobID;
+    },
+    setStudentBudget: (state, action) => {
+      state.studentBudget = action.payload;
+    },
+    setStudentNotBudget: (state, action) => {
+      state.studentNotBudget = action.payload;
     },
   },
-})
+});
 
-export const { setAccountant } = accountantSlice.actions
-export default accountantSlice.reducer
+export const { setAccountant, setStudentBudget, setStudentNotBudget } = accountantSlice.actions;
+export default accountantSlice.reducer;
