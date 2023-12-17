@@ -100,7 +100,7 @@ const Student = () => {
             <Tabs.Tab value="seven">Мероприятия</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="one">
-            <div className={styles.paymentWrapEdit}>
+            <div className={styles.editWrap}>
               <Input
                 size="md"
                 placeholder="Новая почта"
@@ -130,7 +130,7 @@ const Student = () => {
           <Tabs.Panel value="two">
             {user.payments.map((payment, index) =>
               payment.paymentDirection ? (
-                <div className={styles.paymentWrapPaymentGrant} key={index}>
+                <div className={styles.paymentWrapGrant} key={index}>
                   <Text size="xl">{payment.paymentCost} руб</Text>
                   <Text size="xl">{payment.paymentType}</Text>
                   <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
@@ -143,7 +143,7 @@ const Student = () => {
           <Tabs.Panel value="three">
             {user.payments.map((payment, index) =>
               !payment.paymentDirection && !payment.isPaid ? (
-                <div className={styles.paymentWrapPayment} key={index}>
+                <div className={styles.paymentWrap} key={index}>
                   <Text size="xl">{payment.paymentCost} руб</Text>
                   <Text size="xl">{payment.paymentType}</Text>
                   <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
@@ -155,7 +155,7 @@ const Student = () => {
                   </Button>
                 </div>
               ) : !payment.paymentDirection && payment.isPaid ? (
-                <div className={styles.paymentWrapPaymentActive} key={index}>
+                <div className={styles.paymentWrapActive} key={index}>
                   <Text size="xl">{payment.paymentCost} руб</Text>
                   <Text size="xl">{payment.paymentType}</Text>
                   <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
@@ -167,7 +167,7 @@ const Student = () => {
           </Tabs.Panel>
           <Tabs.Panel value="four">
             {user.journal.map((journal, index) => (
-              <div className={styles.paymentWrap} key={index}>
+              <div className={styles.journalWrap} key={index}>
                 <Text size="xl">{journal.lessons.subject.subjectName}</Text>
                 {journal.mark === null ? (
                   <Text size="xl">Экзамен/Зачет: </Text>
@@ -186,7 +186,7 @@ const Student = () => {
           </Tabs.Panel>
           <Tabs.Panel value="five">
             {user.journal.map((journal, index) => (
-              <div className={styles.paymentWrapAddon} key={index}>
+              <div className={styles.addonWrap} key={index}>
                 {journal.lessons.addons.map((addon, index) => (
                   <div key={index}>
                     <Text size="xl" key={index}>
@@ -199,19 +199,19 @@ const Student = () => {
             ))}
           </Tabs.Panel>
           <Tabs.Panel value="six">
-            <div className={styles.paymentWrapSchedule}>
+            <div className={styles.scheduleWrap}>
               {matrixLessons.map((matrixLesson) =>
                 matrixLesson.map((lesson, index) =>
                   lesson === 0 ? (
-                    <div className={styles.scheduleWrap} key={index}></div>
+                    <div className={styles.scheduleWrapTarget} key={index}></div>
                   ) : typeof lesson === 'string' ? (
-                    <div className={styles.scheduleWrap} key={index}>
+                    <div className={styles.scheduleWrapTarget} key={index}>
                       <Text size="xl" className={styles.scheduleTextStirng}>
                         {lesson}
                       </Text>
                     </div>
                   ) : (
-                    <div className={styles.scheduleWrap} key={index}>
+                    <div className={styles.scheduleWrapTarget} key={index}>
                       <Text size="xl" className={styles.scheduleTextName}>
                         {lesson.subject.subjectName}
                       </Text>
@@ -229,7 +229,7 @@ const Student = () => {
           </Tabs.Panel>
           <Tabs.Panel value="seven">
             {events.arr.map((event, index) => (
-              <div className={styles.paymentWrapEvent} key={index}>
+              <div className={styles.eventWrap} key={index}>
                 <Text size="xl">{event.eventHeader}</Text>
                 <Text size="xl">{event.eventDescription}</Text>
                 <Text size="xl">{event.eventDate.replace('T', ' Время: ')}</Text>

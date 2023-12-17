@@ -60,6 +60,19 @@ function Accountant() {
       setCredit('');
     }
   };
+  const [hostelPrice, setHostelPrice] = useState('');
+  const postHostelPrice = (hostelPrice) => {
+    for (const student of user.studentNotBudget) {
+      axios.post('http://localhost:5240/Payment', {
+        paymentType: 'Задолжность за оплату обучение',
+        paymentCost: +credit,
+        paymentDate: new Date(),
+        studentID: student.studentID,
+        paymentDirection: false,
+      });
+      setCredit('');
+    }
+  };
   return (
     <div className={styles.container}>
       <div className={styles.content__top}>
@@ -81,7 +94,8 @@ function Accountant() {
         <Tabs className={styles.tabs} value={activeTab} onChange={setActiveTab}>
           <Tabs.List className={styles.tabsList} grow>
             <Tabs.Tab value="one">Проставить стипендию</Tabs.Tab>
-            <Tabs.Tab value="two">Проставить задолжность за учебу</Tabs.Tab>
+            <Tabs.Tab value="two">Проставить задолжность за оплату обучение</Tabs.Tab>
+            <Tabs.Tab value="three">Проставить задолжность за оплату общажития</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="one">
             <h2>Проставить стипендию</h2>
@@ -104,6 +118,18 @@ function Accountant() {
               onChange={(e) => setCredit(e.target.value)}
             />
             <Button size="md" variant="filled" onClick={() => postCredit(credit)}>
+              Отправить
+            </Button>
+          </Tabs.Panel>
+          <Tabs.Panel value="three">
+            <h2>Проставить задолжность за оплату общажития</h2>
+            <Input
+              size="md"
+              placeholder="Задолжность за оплату общажития"
+              value={hostelPrice}
+              onChange={(e) => setHostelPrice(e.target.value)}
+            />
+            <Button size="md" variant="filled" onClick={() => postHostelPrice(hostelPrice)}>
               Отправить
             </Button>
           </Tabs.Panel>

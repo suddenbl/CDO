@@ -24,72 +24,72 @@
     .paymentWrap {
       padding-top: 15px;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
       column-gap: 15px;
-      &Edit {
-        display: flex;
-        gap: 15px;
-        padding-top: 15px;
-        flex-wrap: wrap;
-      }
-      &Payment {
-        padding-top: 15px;
-        display: grid;
-        column-gap: 15px;
-        grid-template-columns: repeat(4, 1fr);
-        &Grant {
-          padding-top: 15px;
-          display: grid;
-          column-gap: 15px;
-          grid-template-columns: repeat(3, 1fr);
-        }
-        &Active {
-          padding-top: 15px;
-          display: grid;
-          column-gap: 15px;
-          grid-template-columns: repeat(3, 1fr);
-          color: green;
-        }
-      }
-      &Schedule {
-        padding-top: 15px;
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        .scheduleWrap {
-          border: 1px solid grey;
-          height: 180px;
-          padding: 10px;
-          .scheduleText {
-            &Stirng {
-              font-size: 30px;
-              text-align: center;
-            }
-            &Name {
-              text-align: center;
-              font-weight: 800;
-            }
-            &Fullname {
-              text-align: center;
-            }
-            &Classroom {
-              text-align: center;
-              font-weight: 700;
-            }
-          }
-        }
-      }
-      &Addon {
-        padding-top: 15px;
-        display: grid;
-        column-gap: 15px;
-        grid-template-columns: repeat(2, 1fr);
-      }
-      &Event {
+      grid-template-columns: repeat(4, 1fr);
+      &Grant {
         padding-top: 15px;
         display: grid;
         column-gap: 15px;
         grid-template-columns: repeat(3, 1fr);
       }
+      &Active {
+        padding-top: 15px;
+        display: grid;
+        column-gap: 15px;
+        grid-template-columns: repeat(3, 1fr);
+        color: green;
+      }
+    }
+    .journalWrap {
+      padding-top: 15px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      column-gap: 15px;
+    }
+    .editWrap {
+      display: flex;
+      gap: 15px;
+      padding-top: 15px;
+      flex-wrap: wrap;
+    }
+    .scheduleWrap {
+      padding-top: 15px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      .scheduleWrapTarget {
+        border: 1px solid grey;
+        height: 180px;
+        padding: 10px;
+        .scheduleText {
+          &Stirng {
+            font-size: 30px;
+            text-align: center;
+          }
+          &Name {
+            text-align: center;
+            font-weight: 800;
+          }
+          &Fullname {
+            text-align: center;
+          }
+          &Classroom {
+            text-align: center;
+            font-weight: 700;
+          }
+        }
+      }
+    }
+    .addonWrap {
+      padding-top: 15px;
+      display: grid;
+      column-gap: 15px;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .eventWrap {
+      padding-top: 15px;
+      display: grid;
+      column-gap: 15px;
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 }
