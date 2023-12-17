@@ -5,6 +5,7 @@ import teacherSlice from './slices/teacherSlice'
 import addonSlice from './slices/addonSlice'
 import eventSlice from './slices/eventSlice'
 import accountantSlice from './slices/accountantSlice'
+import unionSlice from './slices/unionSlice'
 
 /* eslint-disable no-underscore-dangle */
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     student: studentSlice,
     teacher: teacherSlice,
     accountant: accountantSlice,
+    union: unionSlice,
     event: eventSlice,
   },
 })

@@ -1,0 +1,38 @@
+.container {
+  .content__top {
+    display: flex;
+    gap: 60px;
+    margin-bottom: 50px;
+
+    .contentTopAvatar {
+      width: 200px;
+      height: 150px;
+      border-radius: 48px;
+    }
+
+    .userInfo {
+      &List {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  }
+
+  .contentBottom {
+    display: flex;
+    max-width: 800px;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .publishForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    button {
+      max-width: 200px;
+    }
+  }
+}

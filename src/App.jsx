@@ -5,6 +5,7 @@ import NotFound from './pages/NotFound/NotFound'
 import Student from './pages/Student/Student'
 import Teacher from './pages/Teacher/Teacher'
 import Accountant from './pages/Accountant/Accountant'
+import Union from './pages/Union/Union'
 import styles from './scss/app.module.scss'
 import '@mantine/core/styles.css'
 import { MantineProvider } from '@mantine/core'
@@ -21,7 +22,7 @@ function App() {
               <Route path="/student/:userId" element={<Student />} />
               <Route path="/teacher/:userId" element={<Teacher />} />
               <Route path="/employee/1/:userID" element={<Accountant />} />
-              {/* <Route path="/employee/2/:userID" element={<Union />} /> */}
+              <Route path="/employee/2/:userID" element={<Union />} />
               {/* <Route path="/employee/3" element={<Rector/>} /> */}
               {/* <Route path="/employee/4" element={<Admin />} /> */}
               <Route path="*" element={<NotFound />}></Route>
