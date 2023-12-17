@@ -36,7 +36,20 @@
         padding-top: 15px;
         display: grid;
         column-gap: 15px;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
+        &Grant {
+          padding-top: 15px;
+          display: grid;
+          column-gap: 15px;
+          grid-template-columns: repeat(3, 1fr);
+        }
+        &Active {
+          padding-top: 15px;
+          display: grid;
+          column-gap: 15px;
+          grid-template-columns: repeat(3, 1fr);
+          color: green;
+        }
       }
       &Schedule {
         padding-top: 15px;

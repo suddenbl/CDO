@@ -44,6 +44,11 @@ const Student = () => {
     dispatch(setPhone(phone));
     axios.put(`http://localhost:5240/Student/${user.studentId}/6/${phone}`);
   };
+
+  const payPayment = (paymentID) => {
+    axios.put(`http://localhost:5240/Payment/${paymentID}/true`);
+  };
+
   let matrixLessons = [
     [0, 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница'],
     ['8:30-10:00', 0, 0, 0, 0, 0],
@@ -123,9 +128,9 @@ const Student = () => {
             </div>
           </Tabs.Panel>
           <Tabs.Panel value="two">
-            {user.payments.map((payment) =>
+            {user.payments.map((payment, index) =>
               payment.paymentDirection ? (
-                <div className={styles.paymentWrapPayment}>
+                <div className={styles.paymentWrapPaymentGrant} key={index}>
                   <Text size="xl">{payment.paymentCost} руб</Text>
                   <Text size="xl">{payment.paymentType}</Text>
                   <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
@@ -136,9 +141,21 @@ const Student = () => {
             )}
           </Tabs.Panel>
           <Tabs.Panel value="three">
-            {user.payments.map((payment) =>
-              !payment.paymentDirection ? (
-                <div className={styles.paymentWrapPayment}>
+            {user.payments.map((payment, index) =>
+              !payment.paymentDirection && !payment.isPaid ? (
+                <div className={styles.paymentWrapPayment} key={index}>
+                  <Text size="xl">{payment.paymentCost} руб</Text>
+                  <Text size="xl">{payment.paymentType}</Text>
+                  <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
+                  <Button
+                    size="md"
+                    variant="filled"
+                    onClick={() => (payPayment(payment.paymentID), location.reload())}>
+                    Оплатить
+                  </Button>
+                </div>
+              ) : !payment.paymentDirection && payment.isPaid ? (
+                <div className={styles.paymentWrapPaymentActive} key={index}>
                   <Text size="xl">{payment.paymentCost} руб</Text>
                   <Text size="xl">{payment.paymentType}</Text>
                   <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
@@ -149,8 +166,8 @@ const Student = () => {
             )}
           </Tabs.Panel>
           <Tabs.Panel value="four">
-            {user.journal.map((journal) => (
-              <div className={styles.paymentWrap}>
+            {user.journal.map((journal, index) => (
+              <div className={styles.paymentWrap} key={index}>
                 <Text size="xl">{journal.lessons.subject.subjectName}</Text>
                 {journal.mark === null ? (
                   <Text size="xl">Экзамен/Зачет: </Text>
@@ -160,7 +177,7 @@ const Student = () => {
                   <Text size="xl">Экзамен: {journal.mark}</Text>
                 )}
                 {journal.rating.map((rating, index) => (
-                  <Text size="xl">
+                  <Text size="xl" key={index}>
                     Рейтинг {index + 1}: {rating}
                   </Text>
                 ))}
@@ -168,13 +185,15 @@ const Student = () => {
             ))}
           </Tabs.Panel>
           <Tabs.Panel value="five">
-            {user.journal.map((journal) => (
-              <div className={styles.paymentWrapAddon}>
-                {journal.lessons.addons.map((addon) => (
-                  <>
-                    <Text size="xl">{addon.addonHeader}</Text>
+            {user.journal.map((journal, index) => (
+              <div className={styles.paymentWrapAddon} key={index}>
+                {journal.lessons.addons.map((addon, index) => (
+                  <div key={index}>
+                    <Text size="xl" key={index}>
+                      {addon.addonHeader}
+                    </Text>
                     <a href="./">{addon.addonDescription}</a>
-                  </>
+                  </div>
                 ))}
               </div>
             ))}
@@ -182,17 +201,17 @@ const Student = () => {
           <Tabs.Panel value="six">
             <div className={styles.paymentWrapSchedule}>
               {matrixLessons.map((matrixLesson) =>
-                matrixLesson.map((lesson) =>
+                matrixLesson.map((lesson, index) =>
                   lesson === 0 ? (
-                    <div className={styles.scheduleWrap}></div>
+                    <div className={styles.scheduleWrap} key={index}></div>
                   ) : typeof lesson === 'string' ? (
-                    <div className={styles.scheduleWrap}>
+                    <div className={styles.scheduleWrap} key={index}>
                       <Text size="xl" className={styles.scheduleTextStirng}>
                         {lesson}
                       </Text>
                     </div>
                   ) : (
-                    <div className={styles.scheduleWrap}>
+                    <div className={styles.scheduleWrap} key={index}>
                       <Text size="xl" className={styles.scheduleTextName}>
                         {lesson.subject.subjectName}
                       </Text>
@@ -209,8 +228,8 @@ const Student = () => {
             </div>
           </Tabs.Panel>
           <Tabs.Panel value="seven">
-            {events.arr.map((event) => (
-              <div className={styles.paymentWrapEvent}>
+            {events.arr.map((event, index) => (
+              <div className={styles.paymentWrapEvent} key={index}>
                 <Text size="xl">{event.eventHeader}</Text>
                 <Text size="xl">{event.eventDescription}</Text>
                 <Text size="xl">{event.eventDate.replace('T', ' Время: ')}</Text>
