@@ -19,4 +19,14 @@
       }
     }
   }
+  .contentBottom {
+    .inputWrap {
+      padding-top: 15px;
+      display: flex;
+      gap: 15px;
+      .input {
+        width: 300px;
+      }
+    }
+  }
 }

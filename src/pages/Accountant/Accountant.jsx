@@ -5,6 +5,7 @@ import {
   setAccountant,
   setStudentBudget,
   setStudentNotBudget,
+  setStudentHostel,
 } from '../../store/slices/accountantSlice';
 import styles from './Accountant.module.scss';
 import { Text, Input, Button, Tabs } from '@mantine/core';
@@ -27,6 +28,8 @@ function Accountant() {
         dispatch(setStudentBudget(resStudentBudget.data));
         const resStudentNotBudget = await axios.get('http://localhost:5240/Student/false/budget');
         dispatch(setStudentNotBudget(resStudentNotBudget.data));
+        const resStudentHostel = await axios.get('http://localhost:5240/Student/true/hostelRent');
+        dispatch(setStudentHostel(resStudentHostel.data));
       } catch (error) {
         console.log('Проблема в получении данных работника', error);
       }
@@ -62,15 +65,15 @@ function Accountant() {
   };
   const [hostelPrice, setHostelPrice] = useState('');
   const postHostelPrice = (hostelPrice) => {
-    for (const student of user.studentNotBudget) {
+    for (const student of user.studentHostel) {
       axios.post('http://localhost:5240/Payment', {
-        paymentType: 'Задолжность за оплату обучение',
-        paymentCost: +credit,
+        paymentType: 'Оплата общежития',
+        paymentCost: +hostelPrice,
         paymentDate: new Date(),
         studentID: student.studentID,
         paymentDirection: false,
       });
-      setCredit('');
+      setHostelPrice('');
     }
   };
   return (
@@ -98,40 +101,46 @@ function Accountant() {
             <Tabs.Tab value="three">Проставить задолжность за оплату общажития</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="one">
-            <h2>Проставить стипендию</h2>
-            <Input
-              size="md"
-              placeholder="Стипендия"
-              value={grant}
-              onChange={(e) => setGrant(e.target.value)}
-            />
-            <Button size="md" variant="filled" onClick={() => postGrant(grant)}>
-              Отправить
-            </Button>
+            <div className={styles.inputWrap}>
+              <Input
+                size="md"
+                placeholder="Стипендия"
+                value={grant}
+                onChange={(e) => setGrant(e.target.value)}
+                className={styles.input}
+              />
+              <Button size="md" variant="filled" onClick={() => postGrant(grant)}>
+                Отправить
+              </Button>
+            </div>
           </Tabs.Panel>
           <Tabs.Panel value="two">
-            <h2>Проставить задолжность за оплату обучение</h2>
-            <Input
-              size="md"
-              placeholder="Задолжность за оплату обучение"
-              value={credit}
-              onChange={(e) => setCredit(e.target.value)}
-            />
-            <Button size="md" variant="filled" onClick={() => postCredit(credit)}>
-              Отправить
-            </Button>
+            <div className={styles.inputWrap}>
+              <Input
+                size="md"
+                placeholder="Задолжность за оплату обучение"
+                value={credit}
+                onChange={(e) => setCredit(e.target.value)}
+                className={styles.input}
+              />
+              <Button size="md" variant="filled" onClick={() => postCredit(credit)}>
+                Отправить
+              </Button>
+            </div>
           </Tabs.Panel>
           <Tabs.Panel value="three">
-            <h2>Проставить задолжность за оплату общажития</h2>
-            <Input
-              size="md"
-              placeholder="Задолжность за оплату общажития"
-              value={hostelPrice}
-              onChange={(e) => setHostelPrice(e.target.value)}
-            />
-            <Button size="md" variant="filled" onClick={() => postHostelPrice(hostelPrice)}>
-              Отправить
-            </Button>
+            <div className={styles.inputWrap}>
+              <Input
+                size="md"
+                placeholder="Задолжность за оплату общажития"
+                value={hostelPrice}
+                onChange={(e) => setHostelPrice(e.target.value)}
+                className={styles.input}
+              />
+              <Button size="md" variant="filled" onClick={() => postHostelPrice(hostelPrice)}>
+                Отправить
+              </Button>
+            </div>
           </Tabs.Panel>
         </Tabs>
       </div>

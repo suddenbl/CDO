@@ -9,6 +9,7 @@ const initialState = {
   jobID: 0,
   studentBudget: [],
   studentNotBudget: [],
+  studentHostel: [],
 };
 
 export const accountantSlice = createSlice({
@@ -29,8 +30,12 @@ export const accountantSlice = createSlice({
     setStudentNotBudget: (state, action) => {
       state.studentNotBudget = action.payload;
     },
+    setStudentHostel: (state, action) => {
+      state.studentHostel = action.payload;
+    },
   },
 });
 
-export const { setAccountant, setStudentBudget, setStudentNotBudget } = accountantSlice.actions;
+export const { setAccountant, setStudentBudget, setStudentNotBudget, setStudentHostel } =
+  accountantSlice.actions;
 export default accountantSlice.reducer;
