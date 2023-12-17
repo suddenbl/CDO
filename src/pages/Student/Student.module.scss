@@ -38,6 +38,33 @@
         column-gap: 15px;
         grid-template-columns: repeat(3, 1fr);
       }
+      &Schedule {
+        padding-top: 15px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        .scheduleWrap {
+          border: 1px solid grey;
+          height: 180px;
+          padding: 10px;
+          .scheduleText {
+            &Stirng {
+              font-size: 30px;
+              text-align: center;
+            }
+            &Name {
+              text-align: center;
+              font-weight: 800;
+            }
+            &Fullname {
+              text-align: center;
+            }
+            &Classroom {
+              text-align: center;
+              font-weight: 700;
+            }
+          }
+        }
+      }
       &Addon {
         padding-top: 15px;
         display: grid;

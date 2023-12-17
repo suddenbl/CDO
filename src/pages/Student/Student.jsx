@@ -2,10 +2,9 @@ import { Button, Input, Tabs, Text } from '@mantine/core';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setStudent, setMail, setPhone } from '../../store/slices/studentSlice';
+import { setStudent, setMail, setPhone, setLessons } from '../../store/slices/studentSlice';
 import styles from './Student.module.scss';
 import { setEvent } from '../../store/slices/eventSlice';
-
 const Student = () => {
   const studentData = useSelector((state) => state.auth.user);
   const authToken = studentData.authToken;
@@ -25,6 +24,10 @@ const Student = () => {
         dispatch(setStudent(response.data));
         const resEvent = await axios.get(`http://localhost:5240/Event`);
         dispatch(setEvent(resEvent.data));
+        const resLessons = await axios.get(
+          `http://localhost:5240/Lesson/${response.data.groupID}/groupId`,
+        );
+        dispatch(setLessons(resLessons.data));
       } catch (error) {
         console.log('Проблема в получении данных студента', error);
       }
@@ -41,6 +44,22 @@ const Student = () => {
     dispatch(setPhone(phone));
     axios.put(`http://localhost:5240/Student/${user.studentId}/6/${phone}`);
   };
+  let matrixLessons = [
+    [0, 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница'],
+    ['8:30-10:00', 0, 0, 0, 0, 0],
+    ['10:20-11:50', 0, 0, 0, 0, 0],
+    ['12:10-13:40', 0, 0, 0, 0, 0],
+    ['14:00-15:30', 0, 0, 0, 0, 0],
+    ['15:50-17:20', 0, 0, 0, 0, 0],
+  ];
+  const createMatrixLessons = () => {
+    for (const lesson of user.lessons) {
+      let y = lesson.dayOrder;
+      let x = lesson.weekdays;
+      matrixLessons[y][x] = lesson;
+    }
+  };
+  createMatrixLessons();
 
   return (
     <div className={styles.container}>
@@ -140,19 +159,11 @@ const Student = () => {
                 ) : (
                   <Text size="xl">Экзамен: {journal.mark}</Text>
                 )}
-                {journal.rating === null ? (
-                  <>
-                    <Text size="xl">Рейтинг 1:</Text>
-                    <Text size="xl">Рейтинг 2:</Text>
-                    <Text size="xl">Рейтинг 3:</Text>
-                  </>
-                ) : (
-                  journal.rating.map((rating, index) => (
-                    <Text size="xl">
-                      Рейтинг {index + 1}: {rating}
-                    </Text>
-                  ))
-                )}
+                {journal.rating.map((rating, index) => (
+                  <Text size="xl">
+                    Рейтинг {index + 1}: {rating}
+                  </Text>
+                ))}
               </div>
             ))}
           </Tabs.Panel>
@@ -169,7 +180,33 @@ const Student = () => {
             ))}
           </Tabs.Panel>
           <Tabs.Panel value="six">
-            <div className={styles.paymentWrap}></div>
+            <div className={styles.paymentWrapSchedule}>
+              {matrixLessons.map((matrixLesson) =>
+                matrixLesson.map((lesson) =>
+                  lesson === 0 ? (
+                    <div className={styles.scheduleWrap}></div>
+                  ) : typeof lesson === 'string' ? (
+                    <div className={styles.scheduleWrap}>
+                      <Text size="xl" className={styles.scheduleTextStirng}>
+                        {lesson}
+                      </Text>
+                    </div>
+                  ) : (
+                    <div className={styles.scheduleWrap}>
+                      <Text size="xl" className={styles.scheduleTextName}>
+                        {lesson.subject.subjectName}
+                      </Text>
+                      <Text size="xl" className={styles.scheduleTextFullname}>
+                        {lesson.teacher.fullNameTeacher}
+                      </Text>
+                      <Text size="xl" className={styles.scheduleTextClassroom}>
+                        {lesson.classroom}
+                      </Text>
+                    </div>
+                  ),
+                ),
+              )}
+            </div>
           </Tabs.Panel>
           <Tabs.Panel value="seven">
             {events.arr.map((event) => (
