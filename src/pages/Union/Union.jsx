@@ -36,11 +36,12 @@ const Union = () => {
 
   const pushPublication = async (e, title, description, date) => {
     e.preventDefault()
+    const adjustedDate = dayjs(date).format('YYYY-MM-DDTHH:mm:ss')
     try {
       const response = await axios.post('http://localhost:5240/Event', {
         eventHeader: title,
         eventDescription: description,
-        eventDate: date,
+        eventDate: adjustedDate,
       })
 
       console.log('Отправка прошла успешно: ', response.data)
