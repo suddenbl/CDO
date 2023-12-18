@@ -15,17 +15,21 @@ const Teacher = () => {
 
   useEffect(() => {
     const fetchTeacherData = async () => {
-      const response = await axios.get(
-        `http://localhost:5240/Teacher/${teacherAuthToken}/authToken`,
-      )
-      dispatch(setTeacher(response.data))
+      try {
+        const response = await axios.get(
+          `http://localhost:5240/Teacher/${teacherAuthToken}/authToken`,
+        )
+        dispatch(setTeacher(response.data))
 
-      const lessonNames = response.data.lessons.map((lesson) => ({
-        value: lesson.lessonID.toString(),
-        label: lesson.subject.subjectName + ' - ' + lesson.group.groupName,
-      }))
-      setLessonNames(lessonNames)
-      console.log('Teacher data: ', response.data)
+        const lessonNames = response.data.lessons.map((lesson) => ({
+          value: lesson.lessonID.toString(),
+          label: lesson.subject.subjectName + ' - ' + lesson.group.groupName,
+        }))
+        setLessonNames(lessonNames)
+        console.log('Teacher data: ', response.data)
+      } catch (error) {
+        console.log('Произошла ошибка при получении данных учителя: ', error)
+      }
     }
 
     fetchTeacherData()
