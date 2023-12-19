@@ -1,15 +1,16 @@
-import { Route, Routes } from 'react-router-dom'
-import Header from './components/Header/Header'
-import Login from './pages/Login/Login'
-import NotFound from './pages/NotFound/NotFound'
-import Student from './pages/Student/Student'
-import Teacher from './pages/Teacher/Teacher'
-import Accountant from './pages/Accountant/Accountant'
-import Union from './pages/Union/Union'
-import Rector from './pages/Rector/Rector'
-import styles from './scss/app.module.scss'
-import '@mantine/core/styles.css'
-import { MantineProvider } from '@mantine/core'
+import { Route, Routes } from 'react-router-dom';
+import Header from './components/Header/Header';
+import Login from './pages/Login/Login';
+import NotFound from './pages/NotFound/NotFound';
+import Student from './pages/Student/Student';
+import Teacher from './pages/Teacher/Teacher';
+import Accountant from './pages/Accountant/Accountant';
+import Union from './pages/Union/Union';
+import Rector from './pages/Rector/Rector';
+import Admin from './pages/Admin/Admin';
+import styles from './scss/app.module.scss';
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
 
 function App() {
   return (
@@ -25,14 +26,14 @@ function App() {
               <Route path="/employee/1/:userID" element={<Accountant />} />
               <Route path="/employee/2/:userID" element={<Union />} />
               <Route path="/employee/3/:userID" element={<Rector />} />
-              {/* <Route path="/employee/4" element={<Admin />} /> */}
+              <Route path="/employee/4/:userID" element={<Admin />} />
               <Route path="*" element={<NotFound />}></Route>
             </Routes>
           </div>
         </main>
       </div>
     </MantineProvider>
-  )
+  );
 }
 
-export default App
+export default App;

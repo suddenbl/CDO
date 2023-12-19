@@ -1,0 +1,35 @@
+.container {
+  .content__top {
+    display: flex;
+    gap: 60px;
+    margin-bottom: 50px;
+
+    .contentTopAvatar {
+      width: 162px;
+      height: 162px;
+      border-radius: 48px;
+      //   object-fit: cover;
+    }
+
+    .userInfo {
+      &List {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  }
+  .contentBottom {
+    .wrap {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      margin-bottom: 15px;
+      border: 1px solid grey;
+      &Editor {
+        margin-top: 15px;
+        display: flex;
+        gap: 15px;
+      }
+    }
+  }
+}

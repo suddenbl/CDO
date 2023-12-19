@@ -1,12 +1,13 @@
-import { configureStore } from '@reduxjs/toolkit'
-import authSlice from './slices/authSlice'
-import studentSlice from './slices/studentSlice'
-import teacherSlice from './slices/teacherSlice'
-import addonSlice from './slices/addonSlice'
-import eventSlice from './slices/eventSlice'
-import accountantSlice from './slices/accountantSlice'
-import unionSlice from './slices/unionSlice'
-import rectorSlice from './slices/rectorSlice'
+import { configureStore } from '@reduxjs/toolkit';
+import authSlice from './slices/authSlice';
+import studentSlice from './slices/studentSlice';
+import teacherSlice from './slices/teacherSlice';
+import eventSlice from './slices/eventSlice';
+import accountantSlice from './slices/accountantSlice';
+import unionSlice from './slices/unionSlice';
+import rectorSlice from './slices/rectorSlice';
+import groupSlice from './slices/groupSlice';
+import adminSlice from './slices/adminSlice';
 
 /* eslint-disable no-underscore-dangle */
 export const store = configureStore({
@@ -18,8 +19,10 @@ export const store = configureStore({
     union: unionSlice,
     rector: rectorSlice,
     event: eventSlice,
+    group: groupSlice,
+    admin: adminSlice,
   },
-})
+});
 /* eslint-enable */
 
-export default store
+export default store;
