@@ -21,7 +21,7 @@
 
   .contentBottom {
     display: flex;
-    max-width: 800px;
+    // max-width: 800px;
     flex-direction: column;
     gap: 20px;
   }
@@ -34,6 +34,35 @@
     button {
       margin-top: 10px;
       max-width: 200px;
+    }
+  }
+
+  .scheduleWrap {
+    padding-top: 15px;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(6, 1fr);
+    .scheduleWrapTarget {
+      border: 1px solid grey;
+      height: 180px;
+      padding: 10px;
+      .scheduleText {
+        &Stirng {
+          font-size: 30px;
+          text-align: center;
+        }
+        &Name {
+          text-align: center;
+          font-weight: 800;
+        }
+        &Fullname {
+          text-align: center;
+        }
+        &Classroom {
+          text-align: center;
+          font-weight: 700;
+        }
+      }
     }
   }
 }

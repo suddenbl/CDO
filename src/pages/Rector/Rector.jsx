@@ -1,88 +1,97 @@
-import axios from 'axios'
-import styles from './Rector.module.scss'
-import { useDispatch, useSelector } from 'react-redux'
-import { setRector } from '../../store/slices/rectorSlice'
-import { useEffect, useState } from 'react'
-import { Button, Input, Tabs, Text, Textarea, Select } from '@mantine/core'
+import axios from 'axios';
+import styles from './Rector.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { setRector } from '../../store/slices/rectorSlice';
+import { useEffect, useState } from 'react';
+import { Button, Input, Tabs, Text, Textarea, Select } from '@mantine/core';
 
 const Rector = () => {
-  const rectorData = useSelector((state) => state.auth.user)
-  const authToken = rectorData.authToken
-  const dispatch = useDispatch()
-  const user = useSelector((state) => state.rector)
+  const rectorData = useSelector((state) => state.auth.user);
+  const authToken = rectorData.authToken;
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.rector);
 
-  const [groupList, setGroupList] = useState([])
-  const [lessonList, setLessonList] = useState([])
+  const [groupList, setGroupList] = useState([]);
+  const [lessonList, setLessonList] = useState([]);
 
   useEffect(() => {
     const fetchRectorData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5240/Employee/${authToken}/authToken`)
-        dispatch(setRector(response.data))
-        console.log('Данные ректора: ', response.data)
+        const response = await axios.get(`http://localhost:5240/Employee/${authToken}/authToken`);
+        dispatch(setRector(response.data));
+        console.log('Данные ректора: ', response.data);
 
-        const groups = await axios.get('http://localhost:5240/Group')
+        const groups = await axios.get('http://localhost:5240/Group');
         const groupsList = groups.data.map((group) => ({
           value: group.groupID.toString(),
           label: group.groupName,
-        }))
-        setGroupList(groupsList)
+        }));
+        setGroupList(groupsList);
 
-        const lessons = await axios.get('http://localhost:5240/Lesson')
-        setLessonList(lessons.data)
-        console.log("Lesson's data: ", lessons.data)
+        const lessons = await axios.get('http://localhost:5240/Lesson');
+        setLessonList(lessons.data);
+        console.log("Lesson's data: ", lessons.data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
+    };
 
-    fetchRectorData()
-  }, [])
+    fetchRectorData();
+  }, []);
 
   const pushLoad = async (e, title, description, groupID) => {
-    e.preventDefault()
-    const parsedID = parseInt(groupID)
+    e.preventDefault();
+    const parsedID = parseInt(groupID);
 
     try {
       const response = await axios.post('http://localhost:5240/StudyLoad/', {
         studyLoadHeader: title,
         studyLoadDescription: description,
         groupID: parsedID,
-      })
+      });
 
-      console.log('Load successful:', response.data)
+      console.log('Load successful:', response.data);
 
-      setLoadTitle('')
-      setLoadDescription('')
-      setLoadGroupName('')
-      alert('Учебная нагрузка успешно отправлена')
+      setLoadTitle('');
+      setLoadDescription('');
+      setLoadGroupName('');
+      alert('Учебная нагрузка успешно отправлена');
     } catch (error) {
-      console.log('Error with publishing load:', error)
+      console.log('Error with publishing load:', error);
     }
-  }
+  };
 
-  const [loadTitle, setLoadTitle] = useState('')
-  const [loadDescription, setLoadDescription] = useState('')
-  const [loadGroupName, setLoadGroupName] = useState('')
+  const [loadTitle, setLoadTitle] = useState('');
+  const [loadDescription, setLoadDescription] = useState('');
+  const [loadGroupName, setLoadGroupName] = useState('');
 
-  let matrixLessons = [
-    [0, 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница'],
-    ['8:30-10:00', 0, 0, 0, 0, 0],
-    ['10:20-11:50', 0, 0, 0, 0, 0],
-    ['12:10-13:40', 0, 0, 0, 0, 0],
-    ['14:00-15:30', 0, 0, 0, 0, 0],
-    ['15:50-17:20', 0, 0, 0, 0, 0],
-  ]
   const createMatrixLessons = () => {
-    for (const lesson of lessonList) {
-      let y = lesson.dayOrder
-      let x = lesson.weekdays
-      matrixLessons[y][x] = lesson
-    }
-  }
-  createMatrixLessons()
+    const scheduleByGroup = {};
 
-  const [activeTab, setActiveTab] = useState('first')
+    for (const lesson of lessonList) {
+      const groupID = lesson.group.groupID;
+      if (!scheduleByGroup[groupID]) {
+        scheduleByGroup[groupID] = [
+          [0, 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница'],
+          ['8:30-10:00', 0, 0, 0, 0, 0],
+          ['10:20-11:50', 0, 0, 0, 0, 0],
+          ['12:10-13:40', 0, 0, 0, 0, 0],
+          ['14:00-15:30', 0, 0, 0, 0, 0],
+          ['15:50-17:20', 0, 0, 0, 0, 0],
+        ];
+      }
+
+      let y = lesson.dayOrder;
+      let x = lesson.weekdays;
+      scheduleByGroup[groupID][y][x] = lesson;
+    }
+
+    return scheduleByGroup;
+  };
+
+  const scheduleByGroup = createMatrixLessons();
+
+  const [activeTab, setActiveTab] = useState('first');
 
   return (
     <div className={styles.container}>
@@ -113,7 +122,7 @@ const Rector = () => {
         <Tabs className={styles.tabs} value={activeTab} onChange={setActiveTab} color="indigo">
           <Tabs.List className={styles.tabsList} grow>
             <Tabs.Tab value="first">Учебный план</Tabs.Tab>
-            <Tabs.Tab value="second">ЖОПА</Tabs.Tab>
+            <Tabs.Tab value="second">Работа с расписанием</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="first">
@@ -145,11 +154,46 @@ const Rector = () => {
               </Button>
             </form>
           </Tabs.Panel>
-          <Tabs.Panel value="second"></Tabs.Panel>
+
+          <Tabs.Panel value="second">
+            <Select
+              data={groupList}
+              value={loadGroupName}
+              onChange={(value) => setLoadGroupName(value)}
+              placeholder="Выберите группу"
+            />
+            <div className={styles.scheduleWrap}>
+              {scheduleByGroup[loadGroupName]?.map((matrixLesson, rowIndex) =>
+                matrixLesson.map((lesson, colIndex) =>
+                  lesson === 0 ? (
+                    <div className={styles.scheduleWrapTarget} key={colIndex}></div>
+                  ) : typeof lesson === 'string' ? (
+                    <div className={styles.scheduleWrapTarget} key={colIndex}>
+                      <Text size="xl" className={styles.scheduleTextStirng}>
+                        {lesson}
+                      </Text>
+                    </div>
+                  ) : (
+                    <div className={styles.scheduleWrapTarget} key={colIndex}>
+                      <Text size="xl" className={styles.scheduleTextName}>
+                        {lesson.subject.subjectName}
+                      </Text>
+                      <Text size="xl" className={styles.scheduleTextFullname}>
+                        {lesson.teacher.fullNameTeacher}
+                      </Text>
+                      <Text size="xl" className={styles.scheduleTextClassroom}>
+                        {lesson.classroom}
+                      </Text>
+                    </div>
+                  ),
+                ),
+              )}
+            </div>
+          </Tabs.Panel>
         </Tabs>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Rector
+export default Rector;
