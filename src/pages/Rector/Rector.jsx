@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setRector } from '../../store/slices/rectorSlice';
 import { useEffect, useState } from 'react';
 import { Button, Input, Tabs, Text, Textarea, Select } from '@mantine/core';
+import Modal from 'react-modal';
 
 const Rector = () => {
   const rectorData = useSelector((state) => state.auth.user);
@@ -87,6 +88,52 @@ const Rector = () => {
     }
 
     return scheduleByGroup;
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+
+  const [classroom, setClassroom] = useState('');
+  const [weekdays, setWeekdays] = useState('');
+  const [dayOrder, setDayOrder] = useState('');
+
+  const openModal = (lesson) => {
+    setSelectedLesson(lesson);
+    setIsModalOpen(true);
+    setClassroom(lesson.classroom);
+    setWeekdays(lesson.weekdays);
+    setDayOrder(lesson.dayOrder);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const editLesson = async (classroom, weekdays, dayOrder, parametr, id) => {
+    const url = `http://localhost:5240/Lesson/${id}/${parametr}/`;
+
+    try {
+      if (parametr == 1) {
+        const response = await axios.put(url + classroom);
+        console.log(url + classroom);
+        console.log('Classroom edited successfully:', response.data);
+      }
+      if (parametr == 2) {
+        const response = await axios.put(url + weekdays);
+        console.log('Weekdays edited successfully:', response.data);
+      }
+      if (parametr == 3) {
+        const response = await axios.put(url + dayOrder);
+        console.log('DayOrder edited successfully:', response.data);
+      }
+
+      const lessons = await axios.get('http://localhost:5240/Lesson');
+      dispatch(setLessonList(lessons.data));
+    } catch (error) {
+      console.log('Error while editing lesson:', error);
+    }
+
+    closeModal();
   };
 
   const scheduleByGroup = createMatrixLessons();
@@ -184,10 +231,53 @@ const Rector = () => {
                       <Text size="xl" className={styles.scheduleTextClassroom}>
                         {lesson.classroom}
                       </Text>
+                      <Button onClick={() => openModal(lesson)}>Редактировать</Button>
                     </div>
                   ),
                 ),
               )}
+              <Modal isOpen={isModalOpen} onRequestClose={closeModal}>
+                {selectedLesson && (
+                  <div>
+                    <Text>Аудитория</Text>
+                    <Input
+                      type="text"
+                      value={classroom}
+                      onChange={(e) => setClassroom(e.target.value)}
+                    />
+                    <Button
+                      onClick={() =>
+                        editLesson(classroom, undefined, undefined, 1, selectedLesson.lessonID)
+                      }>
+                      Сохранить изменения
+                    </Button>
+                    <Text>День недели</Text>
+                    <Input
+                      type="number"
+                      value={weekdays}
+                      onChange={(e) => setWeekdays(e.target.value)}
+                    />
+                    <Button
+                      onClick={() =>
+                        editLesson(undefined, weekdays, undefined, 2, selectedLesson.lessonID)
+                      }>
+                      Сохранить изменения
+                    </Button>
+                    <Text>Номер пары</Text>
+                    <Input
+                      type="number"
+                      value={dayOrder}
+                      onChange={(e) => setDayOrder(e.target.value)}
+                    />
+                    <Button
+                      onClick={() =>
+                        editLesson(undefined, undefined, dayOrder, 3, selectedLesson.lessonID)
+                      }>
+                      Сохранить изменения
+                    </Button>
+                  </div>
+                )}
+              </Modal>
             </div>
           </Tabs.Panel>
         </Tabs>
