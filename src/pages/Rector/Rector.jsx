@@ -3,7 +3,7 @@ import styles from './Rector.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRector } from '../../store/slices/rectorSlice';
 import { useEffect, useState } from 'react';
-import { Button, Input, Tabs, Text, Textarea, Select } from '@mantine/core';
+import { Button, Input, Tabs, Text, Textarea, Select, List } from '@mantine/core';
 import Modal from 'react-modal';
 
 const Rector = () => {
@@ -32,6 +32,20 @@ const Rector = () => {
         const lessons = await axios.get('http://localhost:5240/Lesson');
         setLessonList(lessons.data);
         console.log("Lesson's data: ", lessons.data);
+
+        const subjects = await axios.get('http://localhost:5240/Subject');
+        const subjectsList = subjects.data.map((subject) => ({
+          value: subject.subjectID.toString(),
+          label: subject.subjectName,
+        }));
+        setSubjectList(subjectsList);
+
+        const teacher = await axios.get('http://localhost:5240/Teacher');
+        const teacherList = teacher.data.map((teacher) => ({
+          value: teacher.teacherID.toString(),
+          label: teacher.fullNameTeacher,
+        }));
+        setTeachersList(teacherList);
       } catch (error) {
         console.log(error);
       }
@@ -39,6 +53,8 @@ const Rector = () => {
 
     fetchRectorData();
   }, []);
+
+  const [teachersList, setTeachersList] = useState([]);
 
   const pushLoad = async (e, title, description, groupID) => {
     e.preventDefault();
@@ -84,11 +100,17 @@ const Rector = () => {
 
       let y = lesson.dayOrder;
       let x = lesson.weekdays;
-      scheduleByGroup[groupID][y][x] = lesson;
+
+      // Добавьте проверки на undefined перед доступом к свойствам массива
+      if (scheduleByGroup[groupID][y] && scheduleByGroup[groupID][y][x] !== undefined) {
+        scheduleByGroup[groupID][y][x] = lesson;
+      }
     }
 
     return scheduleByGroup;
   };
+
+  const scheduleByGroup = createMatrixLessons();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
@@ -136,7 +158,75 @@ const Rector = () => {
     closeModal();
   };
 
-  const scheduleByGroup = createMatrixLessons();
+  const [subjectList, setSubjectList] = useState([]);
+  const [subjectName, setSubjectName] = useState('');
+
+  const addSubject = async (e, subjectName) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5240/Subject/', {
+        subjectName,
+      });
+      console.log('Subject added successfully:', response.data);
+      const updatedSubjects = await axios.get('http://localhost:5240/Subject');
+      setSubjectList(updatedSubjects.data);
+    } catch (error) {
+      console.log('Error while adding subject:', error);
+    }
+  };
+
+  const deleteSubject = async (subjectID) => {
+    try {
+      const response = await axios.delete(`http://localhost:5240/Subject/${subjectID}`);
+      console.log('Subject deleted successfully:', response.data);
+      const updatedSubjects = await axios.get('http://localhost:5240/Subject');
+      setSubjectList(updatedSubjects.data);
+    } catch (error) {
+      console.log('Error while deleting subject:', error);
+    }
+  };
+
+  const [lessonClassroom, setLessonClassroom] = useState('');
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+
+  const [selectedWeekday, setSelectedWeekday] = useState(null);
+  const [selectedDayOrder, setSelectedDayOrder] = useState(null);
+
+  const createLesson = async (
+    e,
+    classroom,
+    groupID,
+    teacherID,
+    subjectID,
+    selectedWeekday,
+    selectedDayOrder,
+  ) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5240/Lesson', {
+        classroom,
+        groupID,
+        teacherID,
+        subjectID,
+      });
+      console.log('Lesson создан:', response.data);
+
+      const lessonID = response.data.lessonID;
+
+      const chain1 = await axios.put(
+        `http://localhost:5240/Lesson/${lessonID}/2/${selectedWeekday}`,
+      );
+      console.log('chain1: ', chain1);
+      const chain2 = await axios.put(
+        `http://localhost:5240/Lesson/${lessonID}/3/${selectedDayOrder}`,
+      );
+      console.log('chain2: ', chain2);
+    } catch (error) {
+      console.log('Ошибка при создании урока', error);
+    }
+  };
 
   const [activeTab, setActiveTab] = useState('first');
 
@@ -169,7 +259,9 @@ const Rector = () => {
         <Tabs className={styles.tabs} value={activeTab} onChange={setActiveTab} color="indigo">
           <Tabs.List className={styles.tabsList} grow>
             <Tabs.Tab value="first">Учебный план</Tabs.Tab>
-            <Tabs.Tab value="second">Работа с расписанием</Tabs.Tab>
+            <Tabs.Tab value="second">Расписание</Tabs.Tab>
+            <Tabs.Tab value="third">Предметы</Tabs.Tab>
+            <Tabs.Tab value="fourth">Добавление в расписание</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="first">
@@ -279,6 +371,131 @@ const Rector = () => {
                 )}
               </Modal>
             </div>
+
+            {/* <div className={styles.lessonsConstructor}>
+              <Text size="lg">Конструктор уроков:</Text>
+              <form>
+                <Text>Напишите номер аудитории:</Text>
+                <Input type="text"></Input>
+                <Text>Выберите группу:</Text>
+                <Select
+                  data={groupList}
+                  value={loadGroupName}
+                  onChange={(value) => setLoadGroupName(value)}></Select>
+                <Text>Выберите преподавателя:</Text>
+                <Select
+                  data={groupList}
+                  value={loadGroupName}
+                  onChange={(value) => setLoadGroupName(value)}></Select>
+                <Text>Выберите предмет:</Text>
+                <Select
+                  data={groupList}
+                  value={loadGroupName}
+                  onChange={(value) => setLoadGroupName(value)}></Select>
+                <Button type="submit" onClick={(e) => makeLesson(e, classroom, groupID, teacherID)}>
+                  Подтвердить
+                </Button>
+              </form>
+            </div> */}
+          </Tabs.Panel>
+
+          <Tabs.Panel value="third">
+            <form className={styles.publishForm}>
+              <Text size="lg">Добавление предметов, напишите название нового предмета:</Text>
+              <Input
+                type="text"
+                value={subjectName}
+                onChange={(e) => setSubjectName(e.target.value)}
+              />
+              <Button type="submit" onClick={(e) => addSubject(e, subjectName)}>
+                Добавить предмет
+              </Button>
+            </form>
+            <Text size="lg">Удаление предметов, выберите предмет, который хотите удалить:</Text>
+            <List type="ordered" className={styles.subjectList}>
+              {subjectList.map((subject) => (
+                <List.Item key={subject.subjectID}>
+                  <Text size="md" className={styles.subjectName}>
+                    {subject.subjectName}
+                  </Text>
+                  <Button onClick={(e) => deleteSubject(subject.subjectID)}>Удалить</Button>
+                </List.Item>
+              ))}
+            </List>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="fourth">
+            <form className={styles.publishForm}>
+              <Text>Аудитория</Text>
+              <Input
+                type="text"
+                value={lessonClassroom}
+                onChange={(e) => setLessonClassroom(e.target.value)}
+              />
+              <Text>Выберите группу:</Text>
+              <Select
+                data={groupList}
+                value={selectedGroup}
+                onChange={(value) => setSelectedGroup(value)}
+                placeholder="Выберите группу"
+              />
+              <Text>Выберите преподавателя:</Text>
+              <Select
+                data={teachersList}
+                value={selectedTeacher}
+                onChange={(value) => setSelectedTeacher(value)}
+                placeholder="Выберите преподавателя"
+              />
+              <Text>Выберите предмет:</Text>
+              <Select
+                data={subjectList}
+                value={selectedSubject}
+                onChange={(value) => setSelectedSubject(value)}
+                placeholder="Выберите предмет"
+              />
+              <Text>Выберите день недели:</Text>
+              <Select
+                data={[
+                  { value: '1', label: 'Понедельник' },
+                  { value: '2', label: 'Вторник' },
+                  { value: '3', label: 'Среда' },
+                  { value: '4', label: 'Четверг' },
+                  { value: '5', label: 'Пятница' },
+                ]}
+                value={selectedWeekday}
+                onChange={(value) => setSelectedWeekday(value)}
+                placeholder="Выберите день недели"
+              />
+
+              <Text>Выберите порядок пары:</Text>
+              <Select
+                data={[
+                  { value: '1', label: '1' },
+                  { value: '2', label: '2' },
+                  { value: '3', label: '3' },
+                  { value: '4', label: '4' },
+                  { value: '5', label: '5' },
+                ]}
+                value={selectedDayOrder}
+                onChange={(value) => setSelectedDayOrder(value)}
+                placeholder="Выберите порядок пары"
+              />
+              <Button
+                type="submit"
+                onClick={(e) =>
+                  createLesson(
+                    e,
+                    lessonClassroom,
+                    selectedGroup,
+                    selectedTeacher,
+                    selectedSubject,
+                    selectedWeekday,
+                    selectedDayOrder,
+                  )
+                }>
+                Создать урок
+              </Button>
+            </form>
           </Tabs.Panel>
         </Tabs>
       </div>

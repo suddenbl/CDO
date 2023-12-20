@@ -21,7 +21,6 @@
 
   .contentBottom {
     display: flex;
-    // max-width: 800px;
     flex-direction: column;
     gap: 20px;
   }
@@ -30,6 +29,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-bottom: 30px;
 
     button {
       margin-top: 10px;
@@ -37,7 +37,12 @@
     }
   }
 
+  .tabsList {
+    margin-bottom: 30px;
+  }
+
   .scheduleWrap {
+    margin-bottom: 30px;
     padding-top: 15px;
     display: grid;
     grid-template-rows: auto;
@@ -69,6 +74,17 @@
           text-align: center;
         }
       }
+    }
+  }
+
+  .subjectList {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+
+    .subjectName {
+      margin-right: 30px;
     }
   }
 }
