@@ -1,7 +1,13 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAdmin, setStudent, setTeacher } from '../../store/slices/adminSlice';
+import {
+  setAdmin,
+  setStudent,
+  setTeacher,
+  setJob,
+  setEmployee,
+} from '../../store/slices/adminSlice';
 import { setGroup } from '../../store/slices/groupSlice';
 
 import styles from './Admin.module.scss';
@@ -35,6 +41,15 @@ function Admin() {
         setGroupName(groupName);
         const responseTeacher = await axios.get(`http://localhost:5240/Teacher`);
         dispatch(setTeacher(responseTeacher.data));
+        const responseJob = await axios.get(`http://localhost:5240/JobTitle`);
+        dispatch(setJob(responseJob.data));
+        const jobName = responseJob.data.map((job) => ({
+          value: job.jobID.toString(),
+          label: job.jobName,
+        }));
+        setJobName(jobName);
+        const resposneEmployee = await axios.get(`http://localhost:5240/Employee`);
+        dispatch(setEmployee(resposneEmployee.data));
       } catch (error) {
         console.log('Проблема в получении данных работника', error);
       }
@@ -42,6 +57,11 @@ function Admin() {
     fetchData();
   }, []);
   const [groupName, setGroupName] = useState([]);
+  const [jobName, setJobName] = useState([]);
+
+  /////////////////////////
+  // ФУНКЦИОНАЛ СТУДЕНТА //
+  /////////////////////////
 
   const [studentAddFIO, setStudentAddFIO] = useState('');
   const [studentAddAge, setStudentAddAge] = useState('');
@@ -52,10 +72,6 @@ function Admin() {
   const [studentAddLogin, setStudentAddLogin] = useState('');
   const [studentAddPassword, setStudentAddPassword] = useState('');
   const [studentAddGroup, setStudentAddGroup] = useState('');
-
-  //////////////////////////
-  // ФУНКЦИОНАЛ СТУДЕНТА //
-  /////////////////////////
 
   const addStudent = async (
     studentAddFIO,
@@ -123,7 +139,6 @@ function Admin() {
     }
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [studentEditID, setStudentEditID] = useState('');
   const [studentEditParametr, setStudentEditParametr] = useState('');
   const [studentEditFIO, setStudentEditFIO] = useState('');
@@ -134,7 +149,7 @@ function Admin() {
   const [studentEditHostel, setStudentEditHostel] = useState('');
   const [studentEditGroup, setStudentEditGroup] = useState('');
 
-  let arr = [
+  let arrSelectStudent = [
     { value: '1', label: 'ФИО' },
     { value: '2', label: 'Группа' },
     { value: '3', label: 'Возраст' },
@@ -144,13 +159,14 @@ function Admin() {
     { value: '9', label: 'Общежитие' },
   ];
 
-  const openModal = (ID) => {
-    setIsModalOpen(true);
+  const [isModalStudentOpen, setIsModalStudentOpen] = useState(false);
+  const openModalStudent = (ID) => {
+    setIsModalStudentOpen(true);
     setStudentEditID(ID);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeModalStudent = () => {
+    setIsModalStudentOpen(false);
   };
 
   const editStudent = async (
@@ -214,7 +230,7 @@ function Admin() {
 
   const [groupAddName, setGroupAddName] = useState('');
 
-  ////////////////////////
+  ///////////////////////
   // ФУНКЦИОНАЛ ГРУППЫ //
   ///////////////////////
 
@@ -232,7 +248,7 @@ function Admin() {
     dispatch(setGroup(responseGroup.data));
   };
 
-  /////////////////////////
+  ////////////////////////
   // ФУНКЦИОНАЛ УЧИТЕЛЯ //
   ////////////////////////
 
@@ -243,8 +259,194 @@ function Admin() {
   const [teacherAddPassword, setTeacherAddPassword] = useState('');
   const [teacherAddJob, setTeacherAddJob] = useState('');
 
-  const addTeacher = async () => {};
+  const addTeacher = async (
+    teacherAddFIO,
+    teacherAddJob,
+    teacherAddPhone,
+    teacherAddMail,
+    teacherAddLogin,
+    teacherAddPassword,
+  ) => {
+    if (
+      (teacherAddFIO &&
+        teacherAddJob &&
+        teacherAddPhone &&
+        teacherAddMail &&
+        teacherAddLogin &&
+        teacherAddPassword) !== ''
+    ) {
+      await axios.post('http://localhost:5240/Authorization', {
+        login: teacherAddLogin,
+        password: teacherAddPassword,
+        type: 'teacher',
+      });
 
+      const resAuth = await axios.get('http://localhost:5240/Authorization');
+      console.log(resAuth);
+      const tempAuthToken = resAuth.data[resAuth.data.length - 1].authToken;
+      console.log(tempAuthToken);
+
+      await axios.post('http://localhost:5240/Teacher', {
+        fullNameTeacher: teacherAddFIO,
+        contactMailTeacher: teacherAddMail,
+        contactPhoneTeacher: teacherAddPhone,
+        authToken: tempAuthToken,
+        jobID: teacherAddJob,
+      });
+      const responseTeacher = await axios.get(`http://localhost:5240/Teacher`);
+      dispatch(setTeacher(responseTeacher.data));
+      setTeacherAddFIO('');
+      setTeacherAddPhone('');
+      setTeacherAddMail('');
+      setTeacherAddLogin('');
+      setTeacherAddPassword('');
+    }
+  };
+
+  let arrSelectTeacher = [
+    { value: '1', label: 'ФИО' },
+    { value: '3', label: 'Почта' },
+    { value: '4', label: 'Телефон' },
+  ];
+
+  const [isModalTeacherOpen, setIsModalTeacherOpen] = useState(false);
+
+  const openModalTeacher = (ID) => {
+    setIsModalTeacherOpen(true);
+    setTeacherEditID(ID);
+  };
+
+  const closeModalTeacher = () => {
+    setIsModalTeacherOpen(false);
+  };
+
+  const [teacherEditID, setTeacherEditID] = useState('');
+  const [teacherEditParametr, setTeacherEditParametr] = useState('');
+  const [teacherEditFIO, setTeacherEditFIO] = useState('');
+  const [teacherEditPhone, setTeacherEditPhone] = useState('');
+  const [teacherEditMail, setTeacherEditMail] = useState('');
+  const editTeacher = async (teacherEditFIO, teacherEditMail, teacherEditPhone) => {
+    teacherEditParametr === '1'
+      ? await axios.put(
+          `http://localhost:5240/Teacher/${teacherEditID}/${teacherEditParametr}/${teacherEditFIO}`,
+        )
+      : teacherEditParametr === '3'
+      ? await axios.put(
+          `http://localhost:5240/Teacher/${teacherEditID}/${teacherEditParametr}/${teacherEditMail}`,
+        )
+      : teacherEditParametr === '4'
+      ? await axios.put(
+          `http://localhost:5240/Teacher/${teacherEditID}/${teacherEditParametr}/${teacherEditPhone}`,
+        )
+      : '';
+    location.reload();
+  };
+
+  const deleteTeacher = async (authToken) => {
+    await axios.delete(`http://localhost:5240/Authorization/${authToken}`);
+    const responseTeacher = await axios.get(`http://localhost:5240/Teacher`);
+    dispatch(setTeacher(responseTeacher.data));
+  };
+
+  //////////////////////////
+  // ФУНКЦИОНАЛ РАБОТНИКА //
+  //////////////////////////
+  const [employeeAddFIO, setEmployeeAddFIO] = useState('');
+  const [employeeAddPhone, setEmployeeAddPhone] = useState('');
+  const [employeeAddMail, setEmployeeAddMail] = useState('');
+  const [employeeAddLogin, setEmployeeAddLogin] = useState('');
+  const [employeeAddPassword, setEmployeeAddPassword] = useState('');
+  const [employeeAddJob, setEmployeeAddJob] = useState('');
+
+  const addEmployee = async (
+    employeeAddFIO,
+    employeeAddJob,
+    employeeAddPhone,
+    employeeAddMail,
+    employeeAddLogin,
+    employeeAddPassword,
+  ) => {
+    if (
+      (employeeAddFIO &&
+        employeeAddJob &&
+        employeeAddPhone &&
+        employeeAddMail &&
+        employeeAddLogin &&
+        employeeAddPassword) !== ''
+    ) {
+      await axios.post('http://localhost:5240/Authorization', {
+        login: employeeAddLogin,
+        password: employeeAddPassword,
+        type: 'employee',
+      });
+
+      const resAuth = await axios.get('http://localhost:5240/Authorization');
+      console.log(resAuth);
+      const tempAuthToken = resAuth.data[resAuth.data.length - 1].authToken;
+      console.log(tempAuthToken);
+
+      await axios.post('http://localhost:5240/Employee', {
+        fullNameEmployee: employeeAddFIO,
+        contactMailEmployee: employeeAddMail,
+        contactPhoneEmployee: employeeAddPhone,
+        authToken: tempAuthToken,
+        jobID: employeeAddJob,
+      });
+
+      setEmployeeAddFIO('');
+      setEmployeeAddPhone('');
+      setEmployeeAddMail('');
+      setEmployeeAddLogin('');
+      setEmployeeAddPassword('');
+      const resposneEmployee = await axios.get(`http://localhost:5240/Employee`);
+      dispatch(setEmployee(resposneEmployee.data));
+    }
+  };
+
+  let arrSelectEmployee = [
+    { value: '1', label: 'ФИО' },
+    { value: '3', label: 'Почта' },
+    { value: '4', label: 'Телефон' },
+  ];
+
+  const [isModalEmployeeOpen, setIsModalEmployeeOpen] = useState(false);
+
+  const openModalEmployee = (ID) => {
+    setIsModalEmployeeOpen(true);
+    setEmployeeEditID(ID);
+  };
+
+  const closeModalEmployee = () => {
+    setIsModalTeacherOpen(false);
+  };
+
+  const [employeeEditID, setEmployeeEditID] = useState('');
+  const [employeeEditParametr, setEmployeeEditParametr] = useState('');
+  const [employeeEditFIO, setEmployeeEditFIO] = useState('');
+  const [employeeEditPhone, setEmployeeEditPhone] = useState('');
+  const [employeeEditMail, setEmployeeEditMail] = useState('');
+  const editEmployee = async (employeeEditFIO, employeeEditMail, employeeEditPhone) => {
+    employeeEditParametr === '1'
+      ? await axios.put(
+          `http://localhost:5240/Employee/${employeeEditID}/${employeeEditParametr}/${employeeEditFIO}`,
+        )
+      : employeeEditParametr === '3'
+      ? await axios.put(
+          `http://localhost:5240/Employee/${employeeEditID}/${employeeEditParametr}/${employeeEditMail}`,
+        )
+      : employeeEditParametr === '4'
+      ? await axios.put(
+          `http://localhost:5240/Employee/${employeeEditID}/${employeeEditParametr}/${employeeEditPhone}`,
+        )
+      : '';
+    location.reload();
+  };
+
+  const deleteEmployee = async (authToken) => {
+    await axios.delete(`http://localhost:5240/Authorization/${authToken}`);
+    const resposneEmployee = await axios.get(`http://localhost:5240/Employee`);
+    dispatch(setEmployee(resposneEmployee.data));
+  };
   return (
     <div className={styles.container}>
       <div className={styles.content__top}>
@@ -355,7 +557,7 @@ function Admin() {
               </Button>
             </div>
             {user.students.map((student) => (
-              <div className={styles.wrap}>
+              <div className={styles.wrapStudent}>
                 <Text size="xl">AuthToken: {student.authToken}</Text>
                 <Text size="xl">ID: {student.studentID}</Text>
                 <Text size="xl">{student.fullNameStudent}</Text>
@@ -376,7 +578,7 @@ function Admin() {
                   variant="filled"
                   color="green"
                   size="md"
-                  onClick={() => openModal(student.studentID)}>
+                  onClick={() => openModalStudent(student.studentID)}>
                   Редактировать
                 </Button>
                 <Button
@@ -388,11 +590,11 @@ function Admin() {
                 </Button>
               </div>
             ))}
-            <Modal isOpen={isModalOpen} onRequestClose={closeModal}>
+            <Modal isOpen={isModalStudentOpen} onRequestClose={closeModalStudent}>
               <Select
                 size="md"
                 placeholder="Параметр"
-                data={arr}
+                data={arrSelectStudent}
                 value={studentEditParametr}
                 onChange={(value) => setStudentEditParametr(value)}></Select>
               {studentEditParametr === '1' ? (
@@ -488,7 +690,7 @@ function Admin() {
               </Button>
             </div>
             {group.arr.map((group) => (
-              <div className={styles.wrap}>
+              <div className={styles.wrapGroup}>
                 <Text size="xl">ID: {group.groupID}</Text>
                 <Text size="xl">{group.groupName}</Text>
                 <Button
@@ -510,7 +712,16 @@ function Admin() {
                 value={teacherAddFIO}
                 onChange={(e) => setTeacherAddFIO(e.target.value)}
               />
+              <Select
+                size="md"
+                placeholder="Должность"
+                data={jobName}
+                value={teacherAddJob}
+                onChange={(value) => setTeacherAddJob(value)}
+              />
               <Input
+                component={IMaskInput}
+                mask={'8-000-000-00-00'}
                 size="md"
                 placeholder="Номер"
                 value={teacherAddPhone}
@@ -534,22 +745,209 @@ function Admin() {
                 value={teacherAddPassword}
                 onChange={(e) => setTeacherAddPassword(e.target.value)}
               />
-              <Button size="md" variant="filled" onClick={() => addTeacher(groupAddName)}>
+              <Button
+                size="md"
+                variant="filled"
+                onClick={() =>
+                  addTeacher(
+                    teacherAddFIO,
+                    teacherAddJob,
+                    teacherAddPhone,
+                    teacherAddMail,
+                    teacherAddLogin,
+                    teacherAddPassword,
+                  )
+                }>
                 Отправить
               </Button>
             </div>
             {user.teachers.map((teacher) => (
-              <div className={styles.wrap}>
+              <div className={styles.wrapTeacher}>
+                <Text size="xl">authToken: {teacher.authToken}</Text>
+                <Text size="xl">ID: {teacher.teacherID}</Text>
                 <Text size="xl">{teacher.fullNameTeacher}</Text>
-                {/* <Button
+                <Text size="xl">{teacher.jobTitles.jobName}</Text>
+                <Text size="xl">{teacher.contactMailTeacher}</Text>
+                <Text size="xl">{teacher.contactPhoneTeacher}</Text>
+                <Button
+                  variant="filled"
+                  color="green"
+                  size="md"
+                  onClick={() => openModalTeacher(teacher.teacherID)}>
+                  Редактировать
+                </Button>
+                <Button
                   variant="filled"
                   color="red"
                   size="md"
-                  onClick={() => deleteGroup(group.groupID)}>
+                  onClick={() => deleteTeacher(teacher.authToken)}>
                   Удалить
-                </Button> */}
+                </Button>
               </div>
             ))}
+            <Modal isOpen={isModalTeacherOpen} onRequestClose={closeModalTeacher}>
+              <Select
+                size="md"
+                placeholder="Параметр"
+                data={arrSelectTeacher}
+                value={teacherEditParametr}
+                onChange={(value) => setTeacherEditParametr(value)}></Select>
+              {teacherEditParametr === '1' ? (
+                <Input
+                  size="md"
+                  placeholder="ФИО"
+                  value={teacherEditFIO}
+                  onChange={(e) => setTeacherEditFIO(e.target.value)}
+                />
+              ) : teacherEditParametr === '3' ? (
+                <Input
+                  size="md"
+                  placeholder="Почта"
+                  value={teacherEditMail}
+                  onChange={(e) => setTeacherEditMail(e.target.value)}
+                />
+              ) : teacherEditParametr === '4' ? (
+                <Input
+                  component={IMaskInput}
+                  mask={'8-000-000-00-00'}
+                  size="md"
+                  placeholder="Номер"
+                  value={teacherEditPhone}
+                  onChange={(e) => setTeacherEditPhone(e.target.value)}
+                />
+              ) : (
+                ''
+              )}
+              <Button
+                size="md"
+                variant="filled"
+                onClick={() => editTeacher(teacherEditFIO, teacherEditMail, teacherEditPhone)}>
+                Отправить
+              </Button>
+            </Modal>
+          </Tabs.Panel>
+          <Tabs.Panel value="four">
+            <div className={styles.wrapEditor}>
+              <h2>Добавить</h2>
+              <Input
+                size="md"
+                placeholder="ФИО"
+                value={employeeAddFIO}
+                onChange={(e) => setEmployeeAddFIO(e.target.value)}
+              />
+              <Select
+                size="md"
+                placeholder="Должность"
+                data={jobName}
+                value={employeeAddJob}
+                onChange={(value) => setEmployeeAddJob(value)}
+              />
+              <Input
+                component={IMaskInput}
+                mask={'8-000-000-00-00'}
+                size="md"
+                placeholder="Номер"
+                value={employeeAddPhone}
+                onChange={(e) => setEmployeeAddPhone(e.target.value)}
+              />
+              <Input
+                size="md"
+                placeholder="Почта"
+                value={employeeAddMail}
+                onChange={(e) => setEmployeeAddMail(e.target.value)}
+              />
+              <Input
+                size="md"
+                placeholder="Логин"
+                value={employeeAddLogin}
+                onChange={(e) => setEmployeeAddLogin(e.target.value)}
+              />
+              <Input
+                size="md"
+                placeholder="Пароль"
+                value={employeeAddPassword}
+                onChange={(e) => setEmployeeAddPassword(e.target.value)}
+              />
+              <Button
+                size="md"
+                variant="filled"
+                onClick={() =>
+                  addEmployee(
+                    employeeAddFIO,
+                    employeeAddJob,
+                    employeeAddPhone,
+                    employeeAddMail,
+                    employeeAddLogin,
+                    employeeAddPassword,
+                  )
+                }>
+                Отправить
+              </Button>
+            </div>
+            {user.employees.map((employee) => (
+              <div className={styles.wrapEmployee}>
+                <Text size="xl">authToken: {employee.authToken}</Text>
+                <Text size="xl">ID: {employee.employeeID}</Text>
+                <Text size="xl">{employee.fullNameEmployee}</Text>
+                <Text size="xl">{employee.jobTitles.jobName}</Text>
+                <Text size="xl">{employee.contactMailEmployee}</Text>
+                <Text size="xl">{employee.contactPhoneEmployee}</Text>
+                <Button
+                  variant="filled"
+                  color="green"
+                  size="md"
+                  onClick={() => openModalEmployee(employee.employeeID)}>
+                  Редактировать
+                </Button>
+                <Button
+                  variant="filled"
+                  color="red"
+                  size="md"
+                  onClick={() => deleteEmployee(employee.authToken)}>
+                  Удалить
+                </Button>
+              </div>
+            ))}
+            <Modal isOpen={isModalEmployeeOpen} onRequestClose={closeModalEmployee}>
+              <Select
+                size="md"
+                placeholder="Параметр"
+                data={arrSelectTeacher}
+                value={employeeEditParametr}
+                onChange={(value) => setEmployeeEditParametr(value)}></Select>
+              {employeeEditParametr === '1' ? (
+                <Input
+                  size="md"
+                  placeholder="ФИО"
+                  value={employeeEditFIO}
+                  onChange={(e) => setEmployeeEditFIO(e.target.value)}
+                />
+              ) : employeeEditParametr === '3' ? (
+                <Input
+                  size="md"
+                  placeholder="Почта"
+                  value={employeeEditMail}
+                  onChange={(e) => setEmployeeEditMail(e.target.value)}
+                />
+              ) : employeeEditParametr === '4' ? (
+                <Input
+                  component={IMaskInput}
+                  mask={'8-000-000-00-00'}
+                  size="md"
+                  placeholder="Номер"
+                  value={employeeEditPhone}
+                  onChange={(e) => setEmployeeEditPhone(e.target.value)}
+                />
+              ) : (
+                ''
+              )}
+              <Button
+                size="md"
+                variant="filled"
+                onClick={() => editEmployee(employeeEditFIO, employeeEditMail, employeeEditPhone)}>
+                Отправить
+              </Button>
+            </Modal>
           </Tabs.Panel>
         </Tabs>
       </div>

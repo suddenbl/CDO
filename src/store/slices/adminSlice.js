@@ -11,6 +11,8 @@ const initialState = {
   students: [],
   // groups: [],
   teachers: [],
+  jobs: [],
+  employees: [],
 };
 
 export const adminSlice = createSlice({
@@ -35,8 +37,14 @@ export const adminSlice = createSlice({
     setTeacher: (state, action) => {
       state.teachers = action.payload;
     },
+    setJob: (state, action) => {
+      state.jobs = action.payload;
+    },
+    setEmployee: (state, action) => {
+      state.employees = action.payload;
+    },
   },
 });
 
-export const { setAdmin, setStudent, setTeacher } = adminSlice.actions;
+export const { setAdmin, setStudent, setTeacher, setJob, setEmployee } = adminSlice.actions;
 export default adminSlice.reducer;

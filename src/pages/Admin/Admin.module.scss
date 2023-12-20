@@ -21,14 +21,39 @@
   }
   .contentBottom {
     .wrap {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      margin-bottom: 15px;
-      border: 1px solid grey;
       &Editor {
         margin-top: 15px;
+        margin-bottom: 15px;
         display: flex;
         gap: 15px;
+      }
+      &Student {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        border: 1px solid grey;
+        margin-bottom: 5px;
+        gap: 10px;
+      }
+      &Group {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border: 1px solid grey;
+        margin-bottom: 5px;
+        gap: 10px;
+      }
+      &Teacher {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        border: 1px solid grey;
+        margin-bottom: 5px;
+        gap: 10px;
+      }
+      &Employee {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        border: 1px solid grey;
+        margin-bottom: 5px;
+        gap: 10px;
       }
     }
   }

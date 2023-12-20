@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setStudent, setMail, setPhone, setLessons } from '../../store/slices/studentSlice';
 import styles from './Student.module.scss';
 import { setEvent } from '../../store/slices/eventSlice';
+import { IMaskInput } from 'react-imask';
 const Student = () => {
   const studentData = useSelector((state) => state.auth.user);
   const authToken = studentData.authToken;
@@ -36,17 +37,19 @@ const Student = () => {
   }, []);
 
   const dateOfBirth = new Date(user.age).toLocaleDateString('ru-RU');
-  const changeMail = (mail) => {
+  const changeMail = async (mail) => {
     dispatch(setMail(mail));
-    axios.put(`http://localhost:5240/Student/${user.studentId}/5/${mail}`);
+    await axios.put(`http://localhost:5240/Student/${user.studentId}/5/${mail}`);
   };
-  const changePhone = (phone) => {
+  const changePhone = async (phone) => {
     dispatch(setPhone(phone));
-    axios.put(`http://localhost:5240/Student/${user.studentId}/6/${phone}`);
+    await axios.put(`http://localhost:5240/Student/${user.studentId}/6/${phone}`);
   };
 
-  const payPayment = (paymentID) => {
-    axios.put(`http://localhost:5240/Payment/${paymentID}/true`);
+  const payPayment = async (paymentID) => {
+    await axios.put(`http://localhost:5240/Payment/${paymentID}/true`);
+    const response = await axios.get(`http://localhost:5240/Student/${authToken}/authToken`);
+    dispatch(setStudent(response.data));
   };
 
   let matrixLessons = [
@@ -114,6 +117,8 @@ const Student = () => {
                 Отправить
               </Button>
               <Input
+                component={IMaskInput}
+                mask={'8-000-000-00-00'}
                 size="md"
                 placeholder="Новый номер телефона"
                 value={newPhone}
@@ -147,10 +152,7 @@ const Student = () => {
                   <Text size="xl">{payment.paymentCost} руб</Text>
                   <Text size="xl">{payment.paymentType}</Text>
                   <Text size="xl">{payment.paymentDate.slice(0, -13)}</Text>
-                  <Button
-                    size="md"
-                    variant="filled"
-                    onClick={() => (payPayment(payment.paymentID), location.reload())}>
+                  <Button size="md" variant="filled" onClick={() => payPayment(payment.paymentID)}>
                     Оплатить
                   </Button>
                 </div>
