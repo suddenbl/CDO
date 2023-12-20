@@ -9,7 +9,8 @@ const initialState = {
   jobID: 0,
   jobTitles: {},
   students: [],
-  groups: [],
+  // groups: [],
+  teachers: [],
 };
 
 export const adminSlice = createSlice({
@@ -28,11 +29,14 @@ export const adminSlice = createSlice({
     setStudent: (state, action) => {
       state.students = action.payload;
     },
-    setGroup: (state, action) => {
-      state.groups = action.payload;
+    // setGroup: (state, action) => {
+    //   state.groups = action.payload;
+    // },
+    setTeacher: (state, action) => {
+      state.teachers = action.payload;
     },
   },
 });
 
-export const { setAdmin, setStudent, setGroup } = adminSlice.actions;
+export const { setAdmin, setStudent, setTeacher } = adminSlice.actions;
 export default adminSlice.reducer;

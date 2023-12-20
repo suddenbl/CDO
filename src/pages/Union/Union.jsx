@@ -1,58 +1,58 @@
-import axios from 'axios'
-import { useSelector, useDispatch } from 'react-redux'
-import { useEffect, useState } from 'react'
-import { setUnion } from '../../store/slices/unionSlice'
-import { Button, Input, Text } from '@mantine/core'
-import { DateInput } from '@mantine/dates'
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import styles from './Union.module.scss'
+import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { setUnion } from '../../store/slices/unionSlice';
+import { Button, Input, Text } from '@mantine/core';
+import { DateInput } from '@mantine/dates';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import styles from './Union.module.scss';
 
 const Union = () => {
-  const unionData = useSelector((state) => state.auth.user)
-  const authToken = unionData.authToken
-  const dispatch = useDispatch()
-  const user = useSelector((state) => state.union)
+  const unionData = useSelector((state) => state.auth.user);
+  const authToken = unionData.authToken;
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.union);
 
-  dayjs.extend(customParseFormat)
+  dayjs.extend(customParseFormat);
 
   useEffect(() => {
     const fetchUnionData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5240/Employee/${authToken}/authToken`)
-        dispatch(setUnion(response.data))
-        console.log(response.data)
+        const response = await axios.get(`http://localhost:5240/Employee/${authToken}/authToken`);
+        dispatch(setUnion(response.data));
+        console.log(response.data);
       } catch (error) {
-        console.log('Ошибка при получении данные профсоюза', error)
+        console.log('Ошибка при получении данные профсоюза', error);
       }
-    }
+    };
 
-    fetchUnionData()
-  }, [])
+    fetchUnionData();
+  }, []);
 
-  const [eventTitle, setEventTitle] = useState('')
-  const [eventDescription, setEventDescription] = useState('')
-  const [eventTime, setEventTime] = useState(null)
+  const [eventTitle, setEventTitle] = useState('');
+  const [eventDescription, setEventDescription] = useState('');
+  const [eventTime, setEventTime] = useState(null);
 
   const pushPublication = async (e, title, description, date) => {
-    e.preventDefault()
-    const adjustedDate = dayjs(date).format('YYYY-MM-DDTHH:mm:ss')
+    e.preventDefault();
+    const adjustedDate = dayjs(date).format('YYYY-MM-DDTHH:mm:ss');
     try {
       const response = await axios.post('http://localhost:5240/Event', {
         eventHeader: title,
         eventDescription: description,
         eventDate: adjustedDate,
-      })
+      });
 
-      console.log('Отправка прошла успешно: ', response.data)
-      setEventTitle('')
-      setEventDescription('')
-      setEventTime(null)
-      alert('Публикация успешно создана')
+      console.log('Отправка прошла успешно: ', response.data);
+      setEventTitle('');
+      setEventDescription('');
+      setEventTime(null);
+      alert('Публикация успешно создана');
     } catch (error) {
-      console.log('Произошла ошибка при отправке данных о мероприятии:', error)
+      console.log('Произошла ошибка при отправке данных о мероприятии:', error);
     }
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -108,7 +108,7 @@ const Union = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Union
+export default Union;

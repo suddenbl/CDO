@@ -88,8 +88,8 @@ function Accountant() {
           <div className={styles.userInfoList}>
             <Text size="xl">ФИО: {user.fullNameAccountant}</Text>
             <Text size="xl">Должность: Бухгалтер</Text>
-            <Text size="xl">Номер телефона: {user.contactMailAccountant}</Text>
-            <Text size="xl">Почта: {user.contactPhoneAccountant}</Text>
+            <Text size="xl">Номер телефона: {user.contactPhoneAccountant}</Text>
+            <Text size="xl">Почта: {user.contactMailAccountant}</Text>
           </div>
         </div>
       </div>
