@@ -230,7 +230,7 @@ const Student = () => {
                         {lesson.subject.subjectName}
                       </Text>
                       <Text size="xl" className={styles.scheduleTextFullname}>
-                        {lesson.teacher.fullNameTeacher}
+                        {lesson.teacherID === null ? '' : lesson.teacher.fullNameTeacher}
                       </Text>
                       <Text size="xl" className={styles.scheduleTextClassroom}>
                         {lesson.classroom}
