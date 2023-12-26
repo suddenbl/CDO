@@ -13,6 +13,7 @@ const initialState = {
   journal: [],
   group: 'string',
   lessons: [],
+  studyLoad: {},
 };
 
 export const studentSlice = createSlice({
@@ -41,8 +42,11 @@ export const studentSlice = createSlice({
     setLessons: (state, action) => {
       state.lessons = action.payload;
     },
+    setStudyLoad: (state, action) => {
+      state.studyLoad = action.payload;
+    },
   },
 });
 
-export const { setStudent, setPhone, setMail, setLessons } = studentSlice.actions;
+export const { setStudent, setPhone, setMail, setLessons, setStudyLoad } = studentSlice.actions;
 export default studentSlice.reducer;

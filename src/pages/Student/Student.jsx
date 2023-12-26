@@ -2,7 +2,13 @@ import { Button, Input, Tabs, Text } from '@mantine/core';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setStudent, setMail, setPhone, setLessons } from '../../store/slices/studentSlice';
+import {
+  setStudent,
+  setMail,
+  setPhone,
+  setLessons,
+  setStudyLoad,
+} from '../../store/slices/studentSlice';
 import styles from './Student.module.scss';
 import { setEvent } from '../../store/slices/eventSlice';
 import { IMaskInput } from 'react-imask';
@@ -29,6 +35,10 @@ const Student = () => {
           `http://localhost:5240/Lesson/${response.data.groupID}/groupId`,
         );
         dispatch(setLessons(resLessons.data));
+        const resStudyLoad = await axios.get(
+          `http://localhost:5240/StudyLoad/${response.data.groupID}`,
+        );
+        dispatch(setStudyLoad(resStudyLoad.data));
       } catch (error) {
         console.log('Проблема в получении данных студента', error);
       }
@@ -71,6 +81,7 @@ const Student = () => {
 
   return (
     <div className={styles.container}>
+      {console.log(user.studyLoad)}
       <div className={styles.content__top}>
         <img
           className={styles.contentTopAvatar}
@@ -101,6 +112,7 @@ const Student = () => {
             <Tabs.Tab value="five">Просмотреть лекционный материал</Tabs.Tab>
             <Tabs.Tab value="six">Просмотреть расписание</Tabs.Tab>
             <Tabs.Tab value="seven">Мероприятия</Tabs.Tab>
+            <Tabs.Tab value="eight">Учебный план</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="one">
             <div className={styles.editWrap}>
@@ -237,6 +249,12 @@ const Student = () => {
                 <Text size="xl">{event.eventDate.replace('T', ' Время: ')}</Text>
               </div>
             ))}
+          </Tabs.Panel>
+          <Tabs.Panel value="eight">
+            <div className={styles.eventWrap}>
+              <Text size="xl">{user.studyLoad.studyLoadHeader}</Text>
+              <Text size="xl">{user.studyLoad.studyLoadDescription}</Text>
+            </div>
           </Tabs.Panel>
         </Tabs>
       </div>
