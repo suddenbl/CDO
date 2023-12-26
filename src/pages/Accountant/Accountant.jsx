@@ -97,8 +97,8 @@ function Accountant() {
         <Tabs className={styles.tabs} value={activeTab} onChange={setActiveTab}>
           <Tabs.List className={styles.tabsList} grow>
             <Tabs.Tab value="one">Проставить стипендию</Tabs.Tab>
-            <Tabs.Tab value="two">Проставить задолжность за оплату обучение</Tabs.Tab>
-            <Tabs.Tab value="three">Проставить задолжность за оплату общажития</Tabs.Tab>
+            <Tabs.Tab value="two">Проставить задолженность за оплату обучение</Tabs.Tab>
+            <Tabs.Tab value="three">Проставить задолженность за оплату общежития</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="one">
             <div className={styles.inputWrap}>

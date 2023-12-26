@@ -469,7 +469,7 @@ function Admin() {
           <Tabs.List className={styles.tabsList} grow>
             <Tabs.Tab value="one">Студенты</Tabs.Tab>
             <Tabs.Tab value="two">Группы</Tabs.Tab>
-            <Tabs.Tab value="three">Учитиля</Tabs.Tab>
+            <Tabs.Tab value="three">Учителя</Tabs.Tab>
             <Tabs.Tab value="four">Работники</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="one">
@@ -912,7 +912,7 @@ function Admin() {
               <Select
                 size="md"
                 placeholder="Параметр"
-                data={arrSelectTeacher}
+                data={arrSelectEmployee}
                 value={employeeEditParametr}
                 onChange={(value) => setEmployeeEditParametr(value)}></Select>
               {employeeEditParametr === '1' ? (

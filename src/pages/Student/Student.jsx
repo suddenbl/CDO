@@ -96,7 +96,7 @@ const Student = () => {
           <Tabs.List className={styles.tabsList} grow>
             <Tabs.Tab value="one">Внесение данных о студенте</Tabs.Tab>
             <Tabs.Tab value="two">Узнать стипендию</Tabs.Tab>
-            <Tabs.Tab value="three">Узнать задолжности</Tabs.Tab>
+            <Tabs.Tab value="three">Узнать задолженности</Tabs.Tab>
             <Tabs.Tab value="four">Узнать оценки</Tabs.Tab>
             <Tabs.Tab value="five">Просмотреть лекционный материал</Tabs.Tab>
             <Tabs.Tab value="six">Просмотреть расписание</Tabs.Tab>
